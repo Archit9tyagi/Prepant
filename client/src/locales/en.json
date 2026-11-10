@@ -1,0 +1,36 @@
+{
+  "nav": {
+    "findMentor": "Find a mentor",
+    "categories": "Categories",
+    "becomeMentor": "Become a mentor",
+    "login": "Log in",
+    "signup": "Sign up",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "logout": "Log out"
+  },
+  "hero": {
+    "headline": "Prep Smart. Succeed Big.",
+    "subhead": "Whatever you want to learn, whenever you're ready, Prepant connects you with expert mentors who make it simple, personal and tailored.",
+    "searchPlaceholder": "What do you want to learn?",
+    "cta": "Find my mentor",
+    "trust": {
+      "verified": "Verified mentors",
+      "oneToOne": "1-to-1 sessions",
+      "flexible": "Flexible timings",
+      "trial": "Trial session"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "bookTrial": "Book trial",
+    "message": "Message",
+    "comingSoon": "Coming soon",
+    "perHour": "/hr"
+  }
+}

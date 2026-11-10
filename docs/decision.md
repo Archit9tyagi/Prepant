@@ -1,0 +1,6 @@
+# Decisions
+
+| #   | Date       | Decision                                                                                                                                                                          | Reason                                                                                                                                  |
+| --- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | 2026-11-10 | Keep brief and decisions files as `docs/projectbrief.md` and `docs/decision.md` (existing lowercase names) instead of the `PROJECT_BRIEF.md` / `DECISIONS.md` names in the brief. | Files already exist with these names; renaming mid-project is unnecessary churn. All code and docs will reference the actual filenames. |
+| 2   | 2026-11-10 | Implement Tailwind CSS v4 `@theme` tokens in `globals.css` with 23 Radix/shadcn UI primitives and swappable provider interfaces with local mocks.                                 | Ensures zero external dependencies for local setup while strictly upholding Section 9 and Section 11 specifications.                    |
