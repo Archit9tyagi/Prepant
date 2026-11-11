@@ -127,3 +127,28 @@ All routes below require a bearer access token:
 - `POST /api/v1/notifications/read-all`
 
 Messages are limited to 2,000 characters and are stored before the server emits Socket.IO events. Authenticated sockets join `user:<userId>`; clients can join `conversation:<conversationId>`. Events are `message:new`, `message:read` and `notification:new`.
+
+## Dashboards and operations
+
+Mentor routes:
+
+- `GET /api/v1/mentor/dashboard`
+- `GET /api/v1/mentor/students`
+- `GET /api/v1/mentor/earnings`
+- `GET /api/v1/mentor/payouts`
+- `POST /api/v1/mentor/payouts` with `{ "amountPaise": 50000 }`
+- `POST /api/v1/mentor/reviews/:id/reply`
+
+Admin routes require an admin token:
+
+- `GET /api/v1/admin/stats`
+- `GET /api/v1/admin/users`
+- `GET /api/v1/admin/bookings`
+- `GET /api/v1/admin/payments`
+- `POST /api/v1/admin/payments/:id/refund`
+- `GET /api/v1/admin/payouts`, `POST /api/v1/admin/payouts/:id/pay`
+- `GET /api/v1/admin/reviews`, `PATCH /api/v1/admin/reviews/:id`
+- `GET /api/v1/admin/leads`, `PATCH /api/v1/admin/leads/:id`
+- `GET|POST /api/v1/admin/blog`
+- `PATCH /api/v1/admin/settings/:key`
+- `GET /api/v1/admin/audit`

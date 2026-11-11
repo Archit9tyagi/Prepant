@@ -35,6 +35,11 @@ import {
   MessagesPage,
   NotificationsPage,
 } from '../pages/community/CommunityPages.js';
+import {
+  AdminOperations,
+  EarningsPage,
+  MentorDashboard,
+} from '../pages/operations/OperationsPages.js';
 
 const Home = lazy(() => import('../pages/Home.js').then((m) => ({ default: m.Home })));
 const Styleguide = lazy(() =>
@@ -45,16 +50,6 @@ const NotFound = lazy(() => import('../pages/NotFound.js').then((m) => ({ defaul
 const SuspenseLoader: React.FC = () => (
   <div className="flex min-h-[50vh] items-center justify-center">
     <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
-  </div>
-);
-
-// Placeholder components for Phase 1+
-const PlaceholderPage: React.FC<{ title: string }> = ({ title }) => (
-  <div className="p-8 text-center">
-    <h2 className="text-xl font-bold text-slate-900">{title}</h2>
-    <p className="mt-2 text-xs text-slate-500">
-      Scheduled for implementation in subsequent phases.
-    </p>
   </div>
 );
 
@@ -206,7 +201,7 @@ export const router = createBrowserRouter([
       <RequireAuth>
         <RequireRole roles={['mentor']}>
           <DashboardShell role="mentor">
-            <MentorAvailability />
+            <MentorDashboard />
           </DashboardShell>
         </RequireRole>
       </RequireAuth>
@@ -219,6 +214,18 @@ export const router = createBrowserRouter([
         <RequireRole roles={['mentor']}>
           <DashboardShell role="mentor">
             <MentorAvailability />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/teach/earnings',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['mentor']}>
+          <DashboardShell role="mentor">
+            <EarningsPage />
           </DashboardShell>
         </RequireRole>
       </RequireAuth>
@@ -322,7 +329,7 @@ export const router = createBrowserRouter([
       <RequireAuth>
         <RequireRole roles={['admin']}>
           <DashboardShell role="admin">
-            <PlaceholderPage title="Admin Portal (Phase 8)" />
+            <AdminOperations type="stats" />
           </DashboardShell>
         </RequireRole>
       </RequireAuth>
@@ -352,6 +359,20 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
   },
+  ...(['bookings', 'payments', 'payouts', 'reviews', 'leads', 'blog', 'audit'] as const).map(
+    (type) => ({
+      path: `/admin/${type}`,
+      element: (
+        <RequireAuth>
+          <RequireRole roles={['admin']}>
+            <DashboardShell role="admin">
+              <AdminOperations type={type} />
+            </DashboardShell>
+          </RequireRole>
+        </RequireAuth>
+      ),
+    }),
+  ),
 ]);
 
 function MentorProfileRoute() {

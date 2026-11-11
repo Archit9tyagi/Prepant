@@ -2,14 +2,15 @@
 
 ## Current status
 
-- **Phase:** 5 — Favorites, messaging and notifications
-- **Chunk:** 5.4 — Verification and handoff
+- **Phase:** 6 — Dashboards and operations
+- **Chunk:** 6.1 — Dashboards, payouts and admin operations
 - **Done:** Phase 3 public discovery, taxonomy/exam landing APIs, mentor search/profile, lead capture, blog endpoints, sitemap/robots, quiz and public pages
 - **Done:** Availability editor/API, timezone-aware slot generation, unique slot locks, bookings, mock/Razorpay payment providers, confirmation, cancellation, classroom join, completion and reviews
 - **Done:** Favorites, conversations, messages, unread/read state, in-app notifications, Socket.IO authentication/events and student/mentor community screens
-- **In progress:** Final Phase 5 verification and documentation
-- **Next:** Phase 6 — richer dashboards, messaging enhancements and operational admin surfaces.
-- **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md), [PHASE_5.md](./phases/PHASE_5.md)
+- **Done:** Mentor dashboards, earnings/payout requests, admin stats/users/bookings/payments/refunds/payouts/reviews/leads/blog/settings/audit operations and protected client surfaces
+- **In progress:** Final Phase 6 chunk verification
+- **Next:** Phase 6.2 — richer session controls, rescheduling/no-show workflows and dashboard polish.
+- **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md), [PHASE_5.md](./phases/PHASE_5.md), [PHASE_6.md](./phases/PHASE_6.md)
 
 ## How to run
 
