@@ -2,6 +2,8 @@ import type { PaymentProvider } from './payment/types.js';
 import { MockPaymentProvider } from './payment/mock.js';
 import type { EmailProvider } from './email/types.js';
 import { ConsoleEmailProvider } from './email/console.js';
+import { SmtpEmailProvider } from './email/smtp.js';
+import { env } from '../config/env.js';
 import type { StorageProvider } from './storage/types.js';
 import { LocalStorageProvider } from './storage/local.js';
 import type { VideoProvider } from './video/types.js';
@@ -21,7 +23,7 @@ export function getPaymentProvider(): PaymentProvider {
 
 export function getEmailProvider(): EmailProvider {
   if (!emailProvider) {
-    emailProvider = new ConsoleEmailProvider();
+    emailProvider = env.SMTP_HOST ? new SmtpEmailProvider() : new ConsoleEmailProvider();
   }
   return emailProvider;
 }

@@ -5,6 +5,7 @@ type SchemaType = AnyZodObject | ZodEffects<AnyZodObject>;
 
 interface ValidateSchemas {
   body?: SchemaType;
+  headers?: SchemaType;
   query?: SchemaType;
   params?: SchemaType;
 }
@@ -14,6 +15,9 @@ export function validate(schemas: ValidateSchemas): RequestHandler {
     try {
       if (schemas.body) {
         req.body = await schemas.body.parseAsync(req.body);
+      }
+      if (schemas.headers) {
+        await schemas.headers.parseAsync(req.headers);
       }
       if (schemas.query) {
         req.query = (await schemas.query.parseAsync(req.query)) as typeof req.query;

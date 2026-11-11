@@ -10,6 +10,7 @@ const envSchema = z.object({
   ACCESS_TOKEN_TTL: z.string().default('15m'),
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().default(30),
   COOKIE_DOMAIN: z.string().optional().default(''),
+  COOKIE_SECURE: z.coerce.boolean().default(false),
   ENCRYPTION_KEY: z
     .string()
     .default('0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'),

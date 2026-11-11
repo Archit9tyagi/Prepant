@@ -9,6 +9,8 @@ import { globalLimiter } from './middleware/rateLimit.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import healthRouter from './routes/health.js';
 import { ApiError } from './utils/ApiError.js';
+import authRouter from './routes/auth.js';
+import usersRouter from './routes/users.js';
 
 export const app = express();
 
@@ -30,6 +32,8 @@ app.use(globalLimiter);
 
 // API v1 routes
 app.use('/api/v1', healthRouter);
+app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', usersRouter);
 
 // Catch-all 404 for undefined routes
 app.use((_req, _res, next) => {

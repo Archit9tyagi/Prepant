@@ -3,9 +3,9 @@
 ## Current status
 
 - **Phase:** 1 — Authentication, users and roles
-- **Chunk:** 1.4 — Verification, documentation and acceptance
-- **Done:** Phase 0 audit, handoff setup, server auth core, server auth extras, client auth surfaces
-- **In progress:** Final targeted verification and documentation
+- **Chunk:** 1.3 — Client authentication surfaces
+- **Done:** Phase 0 audit, handoff setup, server auth core, server auth extras and auth integration tests
+- **In progress:** Client auth pages, silent refresh and protected settings
 - **Next:** Phase 2 — taxonomy, mentor onboarding and admin approval; scope is in [PHASE_1.md](./phases/PHASE_1.md) for the completed Phase 1 contract and the brief roadmap.
 
 ## How to run
