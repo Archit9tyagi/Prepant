@@ -65,6 +65,7 @@ const mentorProfileSchema = new Schema(
 
 mentorProfileSchema.index({ status: 1, 'subjects.subject': 1 });
 mentorProfileSchema.index({ status: 1, hourlyRatePaise: 1 });
+mentorProfileSchema.index({ headline: 'text', bio: 'text' });
 
 export type MentorProfileDocument = InferSchemaType<typeof mentorProfileSchema> & mongoose.Document;
 export const MentorProfile =

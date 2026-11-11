@@ -15,6 +15,7 @@ import taxonomyRouter from './routes/taxonomy.js';
 import mentorRouter from './routes/mentor.js';
 import adminRouter from './routes/admin.js';
 import path from 'node:path';
+import publicRouter from './routes/public.js';
 
 export const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/v1/users', usersRouter);
 app.use('/api/v1', taxonomyRouter);
 app.use('/api/v1/mentor', mentorRouter);
 app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1', publicRouter);
 
 // Catch-all 404 for undefined routes
 app.use((_req, _res, next) => {

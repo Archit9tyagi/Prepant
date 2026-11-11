@@ -79,3 +79,11 @@ All admin routes require an admin access token:
 - `PATCH|DELETE /api/v1/admin/subjects/:id`
 
 Approval, rejection, suspension and catalogue mutations create `AuditLog` records. Approval and rejection send the configured email provider notification.
+
+## Public mentors and leads
+
+- `GET /api/v1/mentors?q=&subject=&minPrice=&maxPrice=&rating=&sort=&page=&limit=`
+- `GET /api/v1/mentors/:slug`
+- `POST /api/v1/leads` with `name`, `phone`, `interest`, optional `email`, `message` and `source`
+
+Only profiles with `status=approved` are returned publicly. Lead submissions are validated and stored with `new` status.

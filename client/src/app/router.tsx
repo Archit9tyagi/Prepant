@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, useParams } from 'react-router-dom';
 import { PublicLayout } from '../components/layout/PublicLayout.js';
 import { DashboardShell } from '../components/layout/DashboardShell.js';
 import { RequireAuth } from './guards/RequireAuth.js';
@@ -18,6 +18,12 @@ import {
   AdminMentors,
   AdminCatalog,
 } from '../pages/mentor/MentorPages.js';
+import {
+  Contact,
+  MentorProfilePage,
+  MentorSearch,
+  StaticPage,
+} from '../pages/public/PublicPages.js';
 
 const Home = lazy(() => import('../pages/Home.js').then((m) => ({ default: m.Home })));
 const Styleguide = lazy(() =>
@@ -64,11 +70,67 @@ export const router = createBrowserRouter([
       },
       {
         path: 'mentors',
-        element: <PlaceholderPage title="Mentor Search (Phase 3)" />,
+        element: <MentorSearch />,
       },
       {
         path: 'become-a-mentor',
         element: <BecomeMentor />,
+      },
+      { path: 'mentors/:slug', element: <MentorProfileRoute /> },
+      { path: 'contact', element: <Contact /> },
+      {
+        path: 'about',
+        element: (
+          <StaticPage title="About Prepant">
+            Prepant makes quality one-to-one guidance accessible to learners across school subjects,
+            exams, languages, technology, music and more.
+          </StaticPage>
+        ),
+      },
+      {
+        path: 'how-it-works',
+        element: (
+          <StaticPage title="How Prepant works">
+            Choose a mentor, book a trial session, and learn through clear, personal guidance built
+            around your goals.
+          </StaticPage>
+        ),
+      },
+      {
+        path: 'faq',
+        element: (
+          <StaticPage title="Frequently asked questions">
+            You can browse mentors by subject and experience. Trial sessions help you decide whether
+            a mentor is right for you. Payments and booking workflows will expand in the next phase.
+          </StaticPage>
+        ),
+      },
+      {
+        path: 'privacy',
+        element: (
+          <StaticPage title="Privacy policy">
+            Draft: pending legal review. Prepant uses your information to provide mentoring, support
+            bookings and keep the marketplace safe.
+          </StaticPage>
+        ),
+      },
+      {
+        path: 'terms',
+        element: (
+          <StaticPage title="Terms of service">
+            Draft: pending legal review. Use Prepant respectfully and provide accurate information
+            when creating an account.
+          </StaticPage>
+        ),
+      },
+      {
+        path: 'refund-policy',
+        element: (
+          <StaticPage title="Refund policy">
+            Draft: pending legal review. Booking cancellation and refund rules will be shown before
+            payment.
+          </StaticPage>
+        ),
       },
       {
         path: 'login',
@@ -181,3 +243,8 @@ export const router = createBrowserRouter([
     ),
   },
 ]);
+
+function MentorProfileRoute() {
+  const { slug = '' } = useParams();
+  return <MentorProfilePage slug={slug} />;
+}
