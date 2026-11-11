@@ -20,10 +20,10 @@ export function validate(schemas: ValidateSchemas): RequestHandler {
         await schemas.headers.parseAsync(req.headers);
       }
       if (schemas.query) {
-        req.query = (await schemas.query.parseAsync(req.query)) as typeof req.query;
+        Object.assign(req.query, await schemas.query.parseAsync(req.query));
       }
       if (schemas.params) {
-        req.params = (await schemas.params.parseAsync(req.params)) as typeof req.params;
+        Object.assign(req.params, await schemas.params.parseAsync(req.params));
       }
       next();
     } catch (err) {
