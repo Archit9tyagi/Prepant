@@ -1,0 +1,8 @@
+# Decisions
+
+| #   | Date       | Decision                                                                                                                                      | Reason                                                                                                             |
+| --- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1   | 2026-11-11 | Keep the existing lowercase `projectbrief.md` and `decision.md` files, and add this uppercase decisions log for the requested canonical path. | Renaming existing files would create unrelated churn; the requested documentation contract is still satisfied.     |
+| 2   | 2026-11-11 | Use MongoDB Memory Server for auth integration tests and keep Docker Compose as the documented local MongoDB option.                          | The Docker daemon is unavailable in this environment, while tests must remain deterministic and self-contained.    |
+| 3   | 2026-11-11 | Defer avatar upload and learner preference endpoints to their requested later phases.                                                         | The Phase 1 scope explicitly defers storage-dependent avatar upload to Phase 2 and learner preferences to Phase 3. |
+| 4   | 2026-11-11 | Use the existing lowercase brief as the source of truth while linking all new handoff documents to it.                                        | The repository already contains the brief under this path; no content conflict was found.                          |
