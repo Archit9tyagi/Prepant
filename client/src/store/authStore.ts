@@ -9,6 +9,7 @@ interface AuthState {
   setAccessToken: (token: string | null) => void;
   setIsLoading: (loading: boolean) => void;
   logout: () => void;
+  setSession: (session: { user: User; accessToken: string }) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -19,4 +20,5 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAccessToken: (accessToken) => set({ accessToken }),
   setIsLoading: (isLoading) => set({ isLoading }),
   logout: () => set({ user: null, accessToken: null }),
+  setSession: (session) => set({ user: session.user, accessToken: session.accessToken }),
 }));

@@ -14,6 +14,7 @@ import {
 import { useAuthStore } from '../../store/authStore.js';
 import { useUiStore } from '../../store/uiStore.js';
 import { siteConfig } from '../../config/site.js';
+import { api } from '../../lib/api.js';
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuthStore();
@@ -21,6 +22,7 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    void api.post('/auth/logout').catch(() => undefined);
     logout();
     navigate('/');
   };

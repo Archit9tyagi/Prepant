@@ -70,6 +70,22 @@ npm run build
 
 ---
 
+## Phase 1 auth and seeded accounts
+
+The development auth flow uses console email delivery when SMTP variables are empty. Seed verified development accounts (never in production) with:
+
+```bash
+npm run seed:users
+```
+
+| Role    | Email                 | Password      |
+| ------- | --------------------- | ------------- |
+| Admin   | admin@prepant.test    | Admin@12345   |
+| Student | student1@prepant.test | Student@12345 |
+| Mentor  | mentor1@prepant.test  | Mentor@12345  |
+
+Auth routes include register, login, rotating refresh, logout, email verification, password reset, profile update and soft delete under `/api/v1/auth` and `/api/v1/users`.
+
 ## Health Check & Styleguide
 
 - **API Health Check**: `http://localhost:5000/api/v1/health`

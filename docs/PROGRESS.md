@@ -3,10 +3,10 @@
 ## Current status
 
 - **Phase:** 1 — Authentication, users and roles
-- **Chunk:** 1.3 — Client authentication surfaces
+- **Chunk:** 1.4 — Verification, documentation and acceptance
 - **Done:** Phase 0 audit, handoff setup, server auth core, server auth extras and auth integration tests
-- **In progress:** Client auth pages, silent refresh and protected settings
-- **Next:** Phase 2 — taxonomy, mentor onboarding and admin approval; scope is in [PHASE_1.md](./phases/PHASE_1.md) for the completed Phase 1 contract and the brief roadmap.
+- **In progress:** Final acceptance verification and Phase 1 tag
+- **Next:** Phase 2 — taxonomy, mentor onboarding and admin approval; the Phase 2 brief scope follows Phase 1 in [projectbrief.md](./projectbrief.md).
 
 ## How to run
 
@@ -22,4 +22,5 @@ MongoDB must be reachable at `MONGODB_URI`. Tests use MongoDB Memory Server.
 ## Known issues
 
 - Docker is not available in the current environment, so Compose startup was not exercised.
+- The API requires MongoDB before it can bind and answer health checks.
 - Console email links are logged by the development email provider.

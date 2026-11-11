@@ -26,6 +26,7 @@ Phase 1 adds the User and RefreshToken models, rotating refresh-cookie auth, ver
 ## Open risks
 
 - Start-up against `mongodb://127.0.0.1:27017/prepant` requires MongoDB or Docker to be running.
+- In the runtime probe, Vite served the client with HTTP 200; the API did not become ready because MongoDB was unavailable, so `/api/v1/health` could not be validated end to end.
 - SMTP is intentionally console-backed unless SMTP variables are configured.
 - Google login is disabled when `GOOGLE_CLIENT_ID` is empty.
 - Full product journeys (taxonomy, booking, payments, messaging and classroom) remain later phases.

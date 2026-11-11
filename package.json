@@ -15,6 +15,7 @@
     "test:e2e": "npx playwright test",
     "seed": "npm run seed -w server",
     "seed:reset": "npm run seed:reset -w server",
+    "seed:users": "npm run seed:users -w server",
     "prepare": "husky"
   },
   "devDependencies": {

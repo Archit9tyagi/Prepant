@@ -4,6 +4,14 @@ import { PublicLayout } from '../components/layout/PublicLayout.js';
 import { DashboardShell } from '../components/layout/DashboardShell.js';
 import { RequireAuth } from './guards/RequireAuth.js';
 import { RequireRole } from './guards/RequireRole.js';
+import {
+  Login,
+  Signup,
+  ForgotPassword,
+  ResetPassword,
+  VerifyEmail,
+  Settings,
+} from '../pages/auth/AuthForms.js';
 
 const Home = lazy(() => import('../pages/Home.js').then((m) => ({ default: m.Home })));
 const Styleguide = lazy(() =>
@@ -58,11 +66,23 @@ export const router = createBrowserRouter([
       },
       {
         path: 'login',
-        element: <PlaceholderPage title="Login (Phase 1)" />,
+        element: <Login />,
       },
       {
         path: 'signup',
-        element: <PlaceholderPage title="Sign up (Phase 1)" />,
+        element: <Signup />,
+      },
+      {
+        path: 'forgot-password',
+        element: <ForgotPassword />,
+      },
+      {
+        path: 'reset-password/:token',
+        element: <ResetPassword />,
+      },
+      {
+        path: 'verify-email/:token',
+        element: <VerifyEmail />,
       },
       {
         path: '*',
@@ -73,6 +93,14 @@ export const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: '/app/settings',
+    element: (
+      <RequireAuth>
+        <Settings />
+      </RequireAuth>
+    ),
   },
   {
     path: '/app',
