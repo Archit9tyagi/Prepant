@@ -16,6 +16,8 @@ import mentorRouter from './routes/mentor.js';
 import adminRouter from './routes/admin.js';
 import path from 'node:path';
 import publicRouter from './routes/public.js';
+import availabilityRouter from './routes/availability.js';
+import bookingsRouter from './routes/bookings.js';
 
 export const app = express();
 
@@ -35,6 +37,29 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(httpLogger);
 app.use(globalLimiter);
 app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+app.get('/robots.txt', (_req, res) => {
+  res.type('text/plain').send(`User-agent: *\nAllow: /\nSitemap: ${env.CLIENT_URL}/sitemap.xml\n`);
+});
+app.get('/sitemap.xml', (_req, res) => {
+  const routes = [
+    '',
+    'mentors',
+    'find-my-mentor',
+    'how-it-works',
+    'about',
+    'contact',
+    'faq',
+    'privacy',
+    'terms',
+    'refund-policy',
+  ];
+  const urls = routes.map((route) => `<url><loc>${env.CLIENT_URL}/${route}</loc></url>`).join('');
+  res
+    .type('application/xml')
+    .send(
+      `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`,
+    );
+});
 
 // API v1 routes
 app.use('/api/v1', healthRouter);
@@ -42,6 +67,8 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1', taxonomyRouter);
 app.use('/api/v1/mentor', mentorRouter);
+app.use('/api/v1/mentor/availability', availabilityRouter);
+app.use('/api/v1/bookings', bookingsRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1', publicRouter);
 

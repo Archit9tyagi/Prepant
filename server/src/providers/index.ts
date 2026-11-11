@@ -1,5 +1,6 @@
 import type { PaymentProvider } from './payment/types.js';
 import { MockPaymentProvider } from './payment/mock.js';
+import { RazorpayPaymentProvider } from './payment/razorpay.js';
 import type { EmailProvider } from './email/types.js';
 import { ConsoleEmailProvider } from './email/console.js';
 import { SmtpEmailProvider } from './email/smtp.js';
@@ -17,7 +18,10 @@ let videoProvider: VideoProvider | null = null;
 
 export function getPaymentProvider(): PaymentProvider {
   if (!paymentProvider) {
-    paymentProvider = new MockPaymentProvider();
+    paymentProvider =
+      env.PAYMENTS_MODE === 'razorpay' && env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET
+        ? new RazorpayPaymentProvider()
+        : new MockPaymentProvider();
   }
   return paymentProvider;
 }

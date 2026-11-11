@@ -23,7 +23,13 @@ import {
   MentorProfilePage,
   MentorSearch,
   StaticPage,
+  FindMyMentor,
+  ContentLanding,
+  BookingPage,
+  BlogList,
+  BlogPost,
 } from '../pages/public/PublicPages.js';
+import { Classroom, MentorAvailability, Sessions } from '../pages/booking/BookingPages.js';
 
 const Home = lazy(() => import('../pages/Home.js').then((m) => ({ default: m.Home })));
 const Styleguide = lazy(() =>
@@ -72,6 +78,13 @@ export const router = createBrowserRouter([
         path: 'mentors',
         element: <MentorSearch />,
       },
+      { path: 'find-my-mentor', element: <FindMyMentor /> },
+      { path: 'learn/:categorySlug', element: <ContentLanding /> },
+      { path: 'learn/:categorySlug/:subjectSlug', element: <ContentLanding /> },
+      { path: 'exams/:examSlug', element: <ContentLanding exam /> },
+      { path: 'book/:slug', element: <BookingPage /> },
+      { path: 'blog', element: <BlogList /> },
+      { path: 'blog/:slug', element: <BlogPost /> },
       {
         path: 'become-a-mentor',
         element: <BecomeMentor />,
@@ -176,7 +189,7 @@ export const router = createBrowserRouter([
       <RequireAuth>
         <RequireRole roles={['student']}>
           <DashboardShell role="student">
-            <PlaceholderPage title="Student Dashboard (Phase 6)" />
+            <Sessions />
           </DashboardShell>
         </RequireRole>
       </RequireAuth>
@@ -188,9 +201,41 @@ export const router = createBrowserRouter([
       <RequireAuth>
         <RequireRole roles={['mentor']}>
           <DashboardShell role="mentor">
-            <PlaceholderPage title="Mentor Portal (Phase 2/6)" />
+            <MentorAvailability />
           </DashboardShell>
         </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/teach/availability',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['mentor']}>
+          <DashboardShell role="mentor">
+            <MentorAvailability />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/app/sessions',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['student']}>
+          <DashboardShell role="student">
+            <Sessions />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/classroom/:bookingId',
+    element: (
+      <RequireAuth>
+        <Classroom />
       </RequireAuth>
     ),
   },

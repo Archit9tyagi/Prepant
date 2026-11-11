@@ -2,12 +2,13 @@
 
 ## Current status
 
-- **Phase:** 3 — Public website, SEO, search and mentor profiles
-- **Chunk:** 3.4 — Verification and handoff
-- **Done:** Phase 2 server and client workflows, public taxonomy, mentor search/profile APIs, lead capture, public pages and SEO metadata
-- **In progress:** Final Phase 3 verification and documentation
-- **Next:** Phase 4 — availability and booking engine with mock payments.
-- **Phase notes:** [PHASE_2.md](./phases/PHASE_2.md)
+- **Phase:** 4 — Availability, booking and payments
+- **Chunk:** 4.4 — Verification and handoff
+- **Done:** Phase 3 public discovery, taxonomy/exam landing APIs, mentor search/profile, lead capture, blog endpoints, sitemap/robots, quiz and public pages
+- **Done:** Availability editor/API, timezone-aware slot generation, unique slot locks, bookings, mock/Razorpay payment providers, confirmation, cancellation, classroom join, completion and reviews
+- **In progress:** Final Phase 4 verification and documentation
+- **Next:** Phase 5 — messaging, notifications and richer student/mentor workspaces.
+- **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md)
 
 ## How to run
 
@@ -25,4 +26,4 @@ MongoDB must be reachable at `MONGODB_URI`. Tests use MongoDB Memory Server.
 - Docker is not available in the current environment, so Compose startup was not exercised.
 - The API requires MongoDB before it can bind and answer health checks.
 - Console email links are logged by the development email provider.
-- Phase 3 mentor search currently uses a responsive card grid; advanced filters, availability slots and booking flow belong to Phase 4.
+- The mock provider confirms payments immediately for local development; production Razorpay requires the documented environment keys.

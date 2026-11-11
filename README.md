@@ -94,6 +94,12 @@ npm run seed:taxonomy
 
 Certificate uploads use Cloudinary when all `CLOUDINARY_*` variables are configured. With the default environment they are saved under `uploads/` and served from the API at `/uploads/...`.
 
+## Phase 3 and Phase 4 marketplace
+
+The public site includes mentor search/profile pages, the four-step `/find-my-mentor` quiz, category and exam landing routes, blog list/detail routes, lead capture, sitemap and robots endpoints. Approved mentors can configure availability at `/teach/availability`. Learners can book a trial or single session at `/book/:slug`; local development uses the mock payment provider and creates a Jitsi classroom. Configure Razorpay with `PAYMENTS_MODE=razorpay` and the `RAZORPAY_*` variables in `server/.env` when deploying payments.
+
+The booking API generates timezone-aware slots, uses unique 15-minute locks to prevent double booking, supports confirmation, cancellation/refunds, completion, classroom join windows and post-session reviews. See [docs/API.md](docs/API.md) for request contracts.
+
 ## Health Check & Styleguide
 
 - **API Health Check**: `http://localhost:5000/api/v1/health`

@@ -87,3 +87,26 @@ Approval, rejection, suspension and catalogue mutations create `AuditLog` record
 - `POST /api/v1/leads` with `name`, `phone`, `interest`, optional `email`, `message` and `source`
 
 Only profiles with `status=approved` are returned publicly. Lead submissions are validated and stored with `new` status.
+
+## Public content
+
+- `GET /api/v1/content/categories/:categorySlug`
+- `GET /api/v1/content/categories/:categorySlug/:subjectSlug`
+- `GET /api/v1/content/exams/:examSlug`
+- `GET /api/v1/posts` and `GET /api/v1/posts/:slug`
+- `GET /api/v1/settings/public`
+- `GET /sitemap.xml` and `GET /robots.txt`
+
+## Availability and booking
+
+- `GET /api/v1/bookings/slots?mentorSlug=&from=&to=&duration=&tz=`
+- `GET|PUT /api/v1/mentor/availability`
+- `POST /api/v1/mentor/availability/exceptions`
+- `POST /api/v1/bookings` creates a pending payment booking and unique 15-minute slot locks.
+- `GET /api/v1/bookings`, `GET /api/v1/bookings/:id`
+- `POST /api/v1/bookings/:id/verify` confirms a mock or Razorpay payment idempotently.
+- `POST /api/v1/bookings/:id/cancel`, `POST /api/v1/bookings/:id/complete`
+- `GET /api/v1/bookings/:id/join` returns the Jitsi room during the join window.
+- `POST /api/v1/bookings/:id/review` creates one review after completion and updates mentor ratings.
+
+Money is stored in integer paise. Availability is expanded in the mentor's IANA timezone and returned as UTC-aware ISO times in the requested timezone. Mock payments are selected by default; Razorpay is selected only when `PAYMENTS_MODE=razorpay` and both keys are present.

@@ -5,8 +5,108 @@ import { validate } from '../middleware/validate.js';
 import { ApiError } from '../utils/ApiError.js';
 import { MentorProfile } from '../models/MentorProfile.js';
 import { Lead } from '../models/Lead.js';
+import { Review } from '../models/Review.js';
+import { Category } from '../models/Category.js';
+import { Subject } from '../models/Subject.js';
+import { Post } from '../models/Post.js';
 
 const router = Router();
+
+router.get(
+  '/content/categories/:categorySlug',
+  asyncHandler(async (req, res) => {
+    const category = (await Category.findOne({
+      slug: req.params.categorySlug,
+      isActive: true,
+    }).lean()) as any;
+    if (!category) throw ApiError.notFound('Category not found');
+    const subjects = await Subject.find({ category: category._id, isActive: true })
+      .sort({ name: 1 })
+      .lean();
+    res.json({ success: true, data: { category, subjects } });
+  }),
+);
+
+router.get(
+  '/content/categories/:categorySlug/:subjectSlug',
+  asyncHandler(async (req, res) => {
+    const category = (await Category.findOne({
+      slug: req.params.categorySlug,
+      isActive: true,
+    }).lean()) as any;
+    const subject =
+      category &&
+      (await Subject.findOne({
+        category: category._id,
+        slug: req.params.subjectSlug,
+        isActive: true,
+      }).lean());
+    if (!category || !subject) throw ApiError.notFound('Subject not found');
+    res.json({ success: true, data: { category, subject } });
+  }),
+);
+
+router.get(
+  '/content/exams/:examSlug',
+  asyncHandler(async (req, res) => {
+    const examNames: Record<string, string> = {
+      jee: 'JEE',
+      neet: 'NEET',
+      upsc: 'UPSC',
+      ssc: 'SSC',
+      cat: 'CAT',
+      gate: 'GATE',
+      cuet: 'CUET',
+      boards: 'Boards',
+    };
+    const examSlug = String(req.params.examSlug);
+    const name = examNames[examSlug.toLowerCase()];
+    if (!name) throw ApiError.notFound('Exam not found');
+    const subjects = await Subject.find({ tags: name, isActive: true }).sort({ name: 1 }).lean();
+    res.json({ success: true, data: { slug: examSlug, name, subjects } });
+  }),
+);
+
+router.get(
+  '/posts',
+  asyncHandler(async (_req, res) => {
+    const posts = await Post.find({ status: 'published' })
+      .sort({ publishedAt: -1 })
+      .limit(50)
+      .select('-contentMarkdown')
+      .lean();
+    res.json({ success: true, data: posts });
+  }),
+);
+
+router.get(
+  '/posts/:slug',
+  asyncHandler(async (req, res) => {
+    const post = await Post.findOne({ slug: req.params.slug, status: 'published' }).lean();
+    if (!post) throw ApiError.notFound('Post not found');
+    res.json({ success: true, data: post });
+  }),
+);
+
+router.get(
+  '/settings/public',
+  asyncHandler(async (_req, res) => {
+    const record = (await (
+      await import('../models/Setting.js')
+    ).Setting.findOne({ key: 'booking' }).lean()) as any;
+    res.json({
+      success: true,
+      data: record?.value ??
+        record ?? {
+          commissionPct: 20,
+          trialDiscountPct: 50,
+          slotStepMinutes: 30,
+          holdMinutes: 10,
+          cancellationWindowHours: 12,
+        },
+    });
+  }),
+);
 
 const mentorQuery = z.object({
   q: z.string().trim().max(100).optional(),
@@ -35,6 +135,9 @@ function card(profile: any) {
     headline: profile.headline,
     subjects: profile.subjects
       .map((item: { subject?: { name: string } }) => item.subject?.name)
+      .filter(Boolean),
+    subjectIds: profile.subjects
+      .map((item: { subject?: { _id?: unknown } }) => item.subject?._id?.toString())
       .filter(Boolean),
     ratingAvg: profile.stats.ratingAvg,
     ratingCount: profile.stats.ratingCount,
@@ -136,6 +239,66 @@ router.get(
   }),
 );
 
+router.get(
+  '/mentors/:slug/similar',
+  asyncHandler(async (req, res) => {
+    const profile = (await MentorProfile.findOne({
+      slug: req.params.slug,
+      status: 'approved',
+    }).lean()) as any;
+    if (!profile) throw ApiError.notFound('Mentor not found');
+    const similar = await MentorProfile.find({
+      _id: { $ne: profile._id },
+      status: 'approved',
+      'subjects.subject': {
+        $in: profile.subjects.map((item: { subject: unknown }) => item.subject),
+      },
+    })
+      .populate('user', 'name avatar country')
+      .populate('subjects.subject', 'name slug')
+      .limit(4)
+      .lean();
+    res.json({ success: true, data: similar.map(card) });
+  }),
+);
+
+router.get(
+  '/mentors/:slug/reviews',
+  validate({
+    query: z.object({
+      page: z.coerce.number().int().min(1).default(1),
+      limit: z.coerce.number().int().min(1).max(50).default(10),
+    }),
+  }),
+  asyncHandler(async (req, res) => {
+    const profile = (await MentorProfile.findOne({
+      slug: req.params.slug,
+      status: 'approved',
+    }).lean()) as any;
+    if (!profile) throw ApiError.notFound('Mentor not found');
+    const query = req.query as unknown as { page: number; limit: number };
+    const [data, total] = await Promise.all([
+      Review.find({ mentor: profile.user, status: 'visible' })
+        .populate('student', 'name avatar')
+        .sort({ createdAt: -1 })
+        .skip((query.page - 1) * query.limit)
+        .limit(query.limit)
+        .lean(),
+      Review.countDocuments({ mentor: profile.user, status: 'visible' }),
+    ]);
+    res.json({
+      success: true,
+      data,
+      meta: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: Math.ceil(total / query.limit),
+      },
+    });
+  }),
+);
+
 router.post(
   '/leads',
   validate({
@@ -153,12 +316,10 @@ router.post(
     const { honeypot, ...input } = req.body;
     if (honeypot) throw ApiError.badRequest('Invalid lead submission');
     const lead = await Lead.create(input);
-    res
-      .status(201)
-      .json({
-        success: true,
-        data: { id: lead._id, message: 'Thanks. We will be in touch soon.' },
-      });
+    res.status(201).json({
+      success: true,
+      data: { id: lead._id, message: 'Thanks. We will be in touch soon.' },
+    });
   }),
 );
 
