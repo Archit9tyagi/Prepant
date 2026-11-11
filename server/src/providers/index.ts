@@ -6,6 +6,7 @@ import { SmtpEmailProvider } from './email/smtp.js';
 import { env } from '../config/env.js';
 import type { StorageProvider } from './storage/types.js';
 import { LocalStorageProvider } from './storage/local.js';
+import { CloudinaryStorageProvider } from './storage/cloudinary.js';
 import type { VideoProvider } from './video/types.js';
 import { JitsiVideoProvider } from './video/jitsi.js';
 
@@ -30,7 +31,10 @@ export function getEmailProvider(): EmailProvider {
 
 export function getStorageProvider(): StorageProvider {
   if (!storageProvider) {
-    storageProvider = new LocalStorageProvider();
+    storageProvider =
+      env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET
+        ? new CloudinaryStorageProvider()
+        : new LocalStorageProvider();
   }
   return storageProvider;
 }

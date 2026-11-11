@@ -16,6 +16,7 @@
     "seed": "npm run seed -w server",
     "seed:reset": "npm run seed:reset -w server",
     "seed:users": "npm run seed:users -w server",
+    "seed:taxonomy": "npm run seed:taxonomy -w server",
     "prepare": "husky"
   },
   "devDependencies": {

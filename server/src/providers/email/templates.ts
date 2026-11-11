@@ -23,4 +23,18 @@ export const emailTemplates = {
       `<a href="${url}">Choose a new password</a>. This link expires in one hour.`,
     ),
   }),
+  mentorApproved: (name: string) => ({
+    subject: 'Your Prepant mentor profile is approved',
+    html: layout(
+      'You are approved',
+      `Hi ${name}, your mentor profile is now approved and can be published on Prepant.`,
+    ),
+  }),
+  mentorRejected: (name: string, reason: string) => ({
+    subject: 'Update needed for your Prepant mentor profile',
+    html: layout(
+      'A little more information is needed',
+      `Hi ${name}, please update your mentor profile: ${reason}`,
+    ),
+  }),
 };

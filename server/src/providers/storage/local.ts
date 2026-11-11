@@ -22,7 +22,7 @@ export class LocalStorageProvider implements StorageProvider {
     await fs.writeFile(filePath, file.buffer);
 
     const publicId = `${folder}/${filename}`;
-    const url = `${env.CLIENT_URL}/uploads/${publicId}`;
+    const url = `${env.SERVER_URL}/uploads/${publicId}`;
 
     return { url, publicId };
   }
@@ -31,8 +31,10 @@ export class LocalStorageProvider implements StorageProvider {
     const filePath = path.join(this.baseDir, publicId);
     try {
       await fs.unlink(filePath);
-    } catch {
-      // Ignore if file doesn't exist
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw error;
+      }
     }
   }
 
