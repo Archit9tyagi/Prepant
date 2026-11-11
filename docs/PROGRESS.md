@@ -4,8 +4,7 @@
 
 - **Phase:** 1 — Authentication, users and roles
 - **Chunk:** 1.4 — Verification, documentation and acceptance
-- **Done:** Phase 0 audit, handoff setup, server auth core, server auth extras and auth integration tests
-- **In progress:** Final acceptance verification and Phase 1 tag
+- **Done:** Phase 0 audit, handoff setup, server auth core, server auth extras, client auth surfaces, final checks and `phase-1` tag
 - **Next:** Phase 2 — taxonomy, mentor onboarding and admin approval; the Phase 2 brief scope follows Phase 1 in [projectbrief.md](./projectbrief.md).
 
 ## How to run
