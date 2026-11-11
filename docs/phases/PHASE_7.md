@@ -15,3 +15,10 @@ for the next post-Phase-6 workstream.
 - Security and dependency review, including CORS, rate limits and upload checks.
 - Sentry integration, production container/deployment documentation and launch checklist.
 - E2E/accessibility coverage, performance/index review, Hindi locale and final SEO/polish work.
+
+## Chunk 7.2 — Security evidence and deployment foundations
+
+- Added the production deployment guide and documented liveness/readiness
+  checks, environment requirements and hosted client/API configuration.
+- Captured the current dependency audit findings and deferred breaking upgrades
+  until they can be compatibility-tested.

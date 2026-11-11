@@ -10,8 +10,9 @@
 - **Done:** Mentor dashboards, earnings/payout requests, admin stats/users/bookings/payments/refunds/payouts/reviews/leads/blog/settings/audit operations and protected client surfaces
 - **Done:** Phase 6.2 session controls, one-time rescheduling, no-show workflows and dashboard session filters
 - **Done:** Phase 7.1 readiness endpoint, request IDs and configurable proxy trust
+- **Done:** Phase 7.2 dependency audit evidence and production deployment guide
 - **In progress:** Phase 7 hardening and production-readiness work
-- **Next:** Phase 7.2 — security/dependency review and production deployment foundations
+- **Next:** Phase 7.3 — compatible dependency upgrades and security remediation
 - **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md), [PHASE_5.md](./phases/PHASE_5.md), [PHASE_6.md](./phases/PHASE_6.md), [PHASE_7.md](./phases/PHASE_7.md)
 
 ## How to run
