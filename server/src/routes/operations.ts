@@ -420,7 +420,7 @@ router.patch(
   '/admin/settings/:key',
   validate({
     params: z.object({ key: z.string().min(1) }),
-    body: z.object({ value: z.record(z.unknown()) }),
+    body: z.object({ value: z.record(z.string(), z.unknown()) }),
   }),
   asyncHandler(async (req, res) => {
     const setting = await Setting.findOneAndUpdate(

@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction, RequestHandler } from 'express';
-import type { AnyZodObject, ZodEffects } from 'zod';
+import type { ZodType } from 'zod';
 
-type SchemaType = AnyZodObject | ZodEffects<AnyZodObject>;
+type SchemaType = ZodType;
 
 interface ValidateSchemas {
   body?: SchemaType;

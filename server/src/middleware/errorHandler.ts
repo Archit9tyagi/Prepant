@@ -28,7 +28,7 @@ export const errorHandler: ErrorRequestHandler = (
   }
 
   if (err instanceof ZodError) {
-    const formatted = err.errors.map((e) => ({
+    const formatted = err.issues.map((e) => ({
       field: e.path.join('.'),
       message: e.message,
     }));

@@ -9,19 +9,21 @@ Date: 2026-11-11
 - Uploads use memory storage, allow only JPEG/PNG/WebP/PDF and enforce 5 MB
   image or 10 MB PDF limits at the certificate endpoint.
 - Secrets are loaded from environment variables; `.env` files remain ignored.
-- `npm audit --omit=dev --audit-level=moderate` completed and reported five
-  production dependency advisories.
+- `npm audit --omit=dev --audit-level=moderate` is clean after the compatible
+  dependency upgrades in Phase 7.3.
 
 ## Dependency findings
 
-The audit reports high-severity advisories for the currently resolved
-Nodemailer and Zod versions and moderate advisories in transitive `uuid`
-dependencies. Automatic `--force` remediation would make breaking upgrades
-(`nodemailer@10.5.0` and `zod@4.6.7`) and was not applied without compatibility
-testing. These upgrades remain a release blocker for production deployment.
+Nodemailer, Zod, Google Auth/Gaxios and Node Cron were upgraded to versions
+without production advisories. Zod 4 compatibility was verified in the
+validation middleware, error handler and settings schema.
+
+The full audit still reports development-tool advisories in Vitest/Vite,
+esbuild, tinypool and TypeScript ESLint. They do not ship in the production
+image (`npm ci --omit=dev`), but should be reviewed before running development
+tools on untrusted projects.
 
 ## Follow-up
 
-Upgrade and test the affected packages in an isolated dependency chunk, then
-rerun the audit and the complete verification suite before enabling production
-traffic.
+Keep the production audit command in the launch checklist and upgrade the
+development toolchain in a separately tested maintenance chunk.
