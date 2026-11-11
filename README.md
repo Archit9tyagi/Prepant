@@ -86,6 +86,14 @@ npm run seed:users
 
 Auth routes include register, login, rotating refresh, logout, email verification, password reset, profile update and soft delete under `/api/v1/auth` and `/api/v1/users`.
 
+Phase 2 provides public taxonomy endpoints, mentor onboarding at `/api/v1/mentor`, and admin review/catalogue endpoints at `/api/v1/admin`. Seed the catalogue after seeding users:
+
+```bash
+npm run seed:taxonomy
+```
+
+Certificate uploads use Cloudinary when all `CLOUDINARY_*` variables are configured. With the default environment they are saved under `uploads/` and served from the API at `/uploads/...`.
+
 ## Health Check & Styleguide
 
 - **API Health Check**: `http://localhost:5000/api/v1/health`
