@@ -5,8 +5,8 @@
 - **Phase:** 2 — Taxonomy, mentor onboarding and admin approval
 - **Chunk:** 2.4 — Verification and handoff
 - **Done:** Phase 0 foundation, Phase 1 authentication, taxonomy models/routes, storage providers, mentor onboarding APIs, certificate uploads, admin approval/catalogue APIs and Phase 2 integration tests
-- **In progress:** Final full-suite verification and Phase 2 commit
-- **Next:** Phase 3 — public website, SEO, search and mentor profiles; see [projectbrief.md](./projectbrief.md).
+- **Done:** Phase 2 server slice verified and committed in three chunks
+- **Next:** Finish the Phase 2 client surfaces (mentor marketing, onboarding wizard and admin review/catalogue screens), then Phase 3 — public website, SEO, search and mentor profiles.
 - **Phase notes:** [PHASE_2.md](./phases/PHASE_2.md)
 
 ## How to run
