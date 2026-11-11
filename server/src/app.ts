@@ -29,7 +29,10 @@ app.set('trust proxy', env.TRUST_PROXY);
 app.use(helmet());
 app.use(
   cors({
-    origin: env.CLIENT_URL,
+    origin: (origin, callback) => {
+      const allowedOrigins = env.CLIENT_URL.split(',').map((value) => value.trim());
+      callback(null, !origin || allowedOrigins.includes(origin));
+    },
     credentials: true,
   }),
 );

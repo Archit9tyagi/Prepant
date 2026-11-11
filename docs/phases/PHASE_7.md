@@ -30,3 +30,9 @@ for the next post-Phase-6 workstream.
 - Verified `npm audit --omit=dev --audit-level=moderate` reports zero
   production vulnerabilities.
 - Re-ran typecheck, lint, tests and production build successfully.
+
+## Chunk 7.4 — Launch gate
+
+- Added `docs/LAUNCH_CHECKLIST.md` with environment, runtime, security,
+  smoke-test and release verification gates.
+- Added automated checks for Helmet security headers and exact-origin CORS.

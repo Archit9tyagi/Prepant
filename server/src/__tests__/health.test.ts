@@ -35,4 +35,16 @@ describe('Health API', () => {
 
     expect(res.headers['x-request-id']).toBe('test-request-id');
   });
+
+  it('sets security headers and only allows the configured client origin', async () => {
+    const allowed = await request(app).get('/api/v1/health').set('Origin', 'http://localhost:5173');
+    const denied = await request(app)
+      .get('/api/v1/health')
+      .set('Origin', 'https://unexpected.example');
+
+    expect(allowed.headers['x-content-type-options']).toBe('nosniff');
+    expect(allowed.headers['access-control-allow-origin']).toBe('http://localhost:5173');
+    expect(allowed.headers['access-control-allow-credentials']).toBe('true');
+    expect(denied.headers['access-control-allow-origin']).toBeUndefined();
+  });
 });

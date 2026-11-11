@@ -12,8 +12,9 @@
 - **Done:** Phase 7.1 readiness endpoint, request IDs and configurable proxy trust
 - **Done:** Phase 7.2 dependency audit evidence and production deployment guide
 - **Done:** Phase 7.3 compatible production dependency upgrades and clean production audit
+- **Done:** Phase 7.4 launch checklist and automated security-boundary checks
 - **In progress:** Phase 7 hardening and production-readiness work
-- **Next:** Phase 7.4 — launch checklist, security verification and remaining hardening
+- **Next:** Phase 7.5 — remaining launch polish and acceptance coverage
 - **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md), [PHASE_5.md](./phases/PHASE_5.md), [PHASE_6.md](./phases/PHASE_6.md), [PHASE_7.md](./phases/PHASE_7.md)
 
 ## How to run
