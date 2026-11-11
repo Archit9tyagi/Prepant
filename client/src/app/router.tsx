@@ -12,6 +12,12 @@ import {
   VerifyEmail,
   Settings,
 } from '../pages/auth/AuthForms.js';
+import {
+  BecomeMentor,
+  MentorOnboarding,
+  AdminMentors,
+  AdminCatalog,
+} from '../pages/mentor/MentorPages.js';
 
 const Home = lazy(() => import('../pages/Home.js').then((m) => ({ default: m.Home })));
 const Styleguide = lazy(() =>
@@ -62,7 +68,7 @@ export const router = createBrowserRouter([
       },
       {
         path: 'become-a-mentor',
-        element: <PlaceholderPage title="Become a Mentor (Phase 2)" />,
+        element: <BecomeMentor />,
       },
       {
         path: 'login',
@@ -127,12 +133,48 @@ export const router = createBrowserRouter([
     ),
   },
   {
+    path: '/teach/onboarding',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['mentor']}>
+          <DashboardShell role="mentor">
+            <MentorOnboarding />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
     path: '/admin',
     element: (
       <RequireAuth>
         <RequireRole roles={['admin']}>
           <DashboardShell role="admin">
             <PlaceholderPage title="Admin Portal (Phase 8)" />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/admin/mentors',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['admin']}>
+          <DashboardShell role="admin">
+            <AdminMentors />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/admin/catalog',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['admin']}>
+          <DashboardShell role="admin">
+            <AdminCatalog />
           </DashboardShell>
         </RequireRole>
       </RequireAuth>

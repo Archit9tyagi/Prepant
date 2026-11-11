@@ -55,7 +55,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ role, children }
     { label: 'Sessions', href: '/teach/sessions', icon: Video },
     { label: 'Students', href: '/teach/students', icon: Users },
     { label: 'Earnings', href: '/teach/earnings', icon: Wallet },
-    { label: 'Profile', href: '/teach/profile', icon: User },
+    { label: 'Profile', href: '/teach/onboarding', icon: User },
     { label: 'Reviews', href: '/teach/reviews', icon: Star },
     { label: 'Messages', href: '/teach/messages', icon: MessageSquare },
   ];
