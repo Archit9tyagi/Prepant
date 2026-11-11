@@ -8,8 +8,9 @@
 - **Done:** Availability editor/API, timezone-aware slot generation, unique slot locks, bookings, mock/Razorpay payment providers, confirmation, cancellation, classroom join, completion and reviews
 - **Done:** Favorites, conversations, messages, unread/read state, in-app notifications, Socket.IO authentication/events and student/mentor community screens
 - **Done:** Mentor dashboards, earnings/payout requests, admin stats/users/bookings/payments/refunds/payouts/reviews/leads/blog/settings/audit operations and protected client surfaces
-- **In progress:** Final Phase 6 chunk verification
-- **Next:** Phase 6.2 — richer session controls, rescheduling/no-show workflows and dashboard polish.
+- **Done:** Phase 6.2 session controls, one-time rescheduling, no-show workflows and dashboard session filters
+- **In progress:** Final Phase 6 verification and documentation
+- **Next:** Phase 7 — hardening, observability and production-readiness review.
 - **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md), [PHASE_5.md](./phases/PHASE_5.md), [PHASE_6.md](./phases/PHASE_6.md)
 
 ## How to run

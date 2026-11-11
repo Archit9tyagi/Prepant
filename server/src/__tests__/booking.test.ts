@@ -53,15 +53,13 @@ describe('availability and booking', () => {
       minNoticeHours: 1,
       maxAdvanceDays: 30,
     });
-    const slots = await request(app)
-      .get('/api/v1/bookings/slots')
-      .query({
-        mentorSlug: profile.slug,
-        from: target.toISODate(),
-        to: target.toISODate(),
-        duration: 30,
-        tz: 'UTC',
-      });
+    const slots = await request(app).get('/api/v1/bookings/slots').query({
+      mentorSlug: profile.slug,
+      from: target.toISODate(),
+      to: target.toISODate(),
+      duration: 30,
+      tz: 'UTC',
+    });
     expect(slots.status).toBe(200);
     expect(slots.body.data[target.toISODate()]).toContain(target.toISO());
     const token = jwt.sign(
@@ -91,6 +89,35 @@ describe('availability and booking', () => {
       .send({ paymentId: 'mock-payment', signature: '' });
     expect(verify.status).toBe(200);
     expect(verify.body.data.status).toBe('confirmed');
+    const rescheduledStart = target.plus({ days: 7 });
+    const rescheduled = await request(app)
+      .post(`/api/v1/bookings/${first.body.data.booking._id}/reschedule`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ startAt: rescheduledStart.toISO() });
+    expect(rescheduled.status, JSON.stringify(rescheduled.body)).toBe(200);
+    expect(new Date(rescheduled.body.data.startAt).toISOString()).toBe(
+      rescheduledStart.toUTC().toJSDate().toISOString(),
+    );
+    const secondReschedule = await request(app)
+      .post(`/api/v1/bookings/${first.body.data.booking._id}/reschedule`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ startAt: rescheduledStart.plus({ days: 7 }).toISO() });
+    expect(secondReschedule.status).toBe(409);
+    const mentorToken = jwt.sign(
+      { sub: mentor._id.toString(), role: 'mentor', email: mentor.email },
+      env.JWT_ACCESS_SECRET,
+    );
+    const noShow = await request(app)
+      .post(`/api/v1/bookings/${first.body.data.booking._id}/no-show`)
+      .set('Authorization', `Bearer ${mentorToken}`)
+      .send({ side: 'student', reason: 'Student did not attend' });
+    expect(noShow.status).toBe(200);
+    expect(noShow.body.data.status).toBe('no_show_student');
+    const studentNoShow = await request(app)
+      .post(`/api/v1/bookings/${first.body.data.booking._id}/no-show`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ side: 'student' });
+    expect(studentNoShow.status).toBe(403);
     expect(await Booking.countDocuments({ student: student._id })).toBe(1);
   });
 });

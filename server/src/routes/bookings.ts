@@ -32,6 +32,9 @@ const createSchema = z.object({
   level: z.string().max(80).optional(),
 });
 const idParams = z.object({ id: z.string().min(1) });
+const rescheduleSchema = z.object({
+  startAt: z.string().datetime(),
+});
 
 router.get(
   '/slots',
@@ -271,7 +274,9 @@ router.post(
     const byStudent = booking.student.toString() === req.user!.id;
     if (!byStudent && booking.mentor.toString() !== req.user!.id)
       throw ApiError.forbidden('You cannot cancel this booking');
-    const windowHours = ((await Setting.findOne().lean()) as any)?.cancellationWindowHours ?? 12;
+    const settingRecord = (await Setting.findOne({ key: 'booking' }).lean()) as any;
+    const bookingSettings = settingRecord?.value ?? settingRecord ?? {};
+    const windowHours = bookingSettings.cancellationWindowHours ?? 12;
     const refund =
       byStudent && booking.startAt.getTime() - Date.now() >= windowHours * 3600000
         ? booking.price.amountPaise
@@ -293,6 +298,7 @@ router.post(
           refund,
           'booking cancellation',
         );
+
         payment.status = 'refunded';
         payment.refunds.push({
           refundId: result.refundId,
@@ -303,6 +309,109 @@ router.post(
         await payment.save();
       }
     }
+    res.json({ success: true, data: booking });
+  }),
+);
+
+router.post(
+  '/:id/reschedule',
+  requireRole('student'),
+  validate({ params: idParams, body: rescheduleSchema }),
+  asyncHandler(async (req, res) => {
+    const booking = await Booking.findOne({
+      _id: req.params.id,
+      student: req.user!.id,
+      status: 'confirmed',
+    });
+    if (!booking) throw ApiError.notFound('Confirmed booking not found');
+    if (booking.rescheduledFrom) {
+      throw ApiError.conflict('This booking has already been rescheduled', 'RESCHEDULE_LIMIT');
+    }
+    const settingRecord = (await Setting.findOne({ key: 'booking' }).lean()) as any;
+    const settings = settingRecord?.value ?? settingRecord ?? {};
+    const windowHours = settings.cancellationWindowHours ?? 12;
+    if (booking.startAt.getTime() - Date.now() < windowHours * 3600000) {
+      throw ApiError.unprocessable(
+        `Rescheduling requires at least ${windowHours} hours notice`,
+        'RESCHEDULE_WINDOW',
+      );
+    }
+    const nextStart = DateTime.fromISO(req.body.startAt, { setZone: true });
+    if (!nextStart.isValid || nextStart.toUTC() <= DateTime.utc()) {
+      throw ApiError.badRequest('The new session time must be in the future');
+    }
+    if (nextStart.toUTC().toMillis() === booking.startAt.getTime()) {
+      throw ApiError.badRequest('Choose a different session time');
+    }
+    const availability = (await Availability.findOne({ mentor: booking.mentor }).lean()) as any;
+    if (!availability)
+      throw ApiError.conflict('Mentor has no availability configured', 'NO_AVAILABILITY');
+    const nextEnd = nextStart.plus({ minutes: booking.durationMins });
+    const localStart = nextStart.setZone(availability.timezone);
+    const localEnd = nextEnd.setZone(availability.timezone);
+    const inAvailability = localRangesForDate(availability, localStart).some((range) => {
+      const rangeStart = DateTime.fromISO(`${localStart.toISODate()}T${range.start}`, {
+        zone: availability.timezone,
+      });
+      const rangeEnd = DateTime.fromISO(`${localStart.toISODate()}T${range.end}`, {
+        zone: availability.timezone,
+      });
+      return (
+        localStart >= rangeStart &&
+        localEnd.plus({ minutes: availability.bufferMinutes }) <= rangeEnd
+      );
+    });
+    if (!inAvailability) {
+      throw ApiError.badRequest('The new time is outside the mentor availability');
+    }
+    const oldLocks = await SlotLock.find({ booking: booking._id }).select('_id slotStart').lean();
+    const oldLockIds = oldLocks.map((lock) => lock._id);
+    const oldSlotStarts = oldLocks.map((lock) => lock.slotStart);
+    const lockCount = Math.ceil((booking.durationMins + availability.bufferMinutes) / 15);
+    const locks = Array.from({ length: lockCount }, (_, index) => ({
+      mentor: booking.mentor,
+      slotStart: nextStart
+        .plus({ minutes: index * 15 })
+        .toUTC()
+        .toJSDate(),
+      booking: booking._id,
+    }));
+    try {
+      await SlotLock.insertMany(locks, { ordered: true });
+    } catch (error) {
+      await SlotLock.deleteMany({ booking: booking._id, slotStart: { $nin: oldSlotStarts } });
+      if (error instanceof mongoose.mongo.MongoServerError && error.code === 11000) {
+        throw ApiError.conflict('That slot was just taken', 'SLOT_TAKEN');
+      }
+      throw error;
+    }
+    await SlotLock.deleteMany({ _id: { $in: oldLockIds } });
+    booking.rescheduledFrom = booking._id;
+    booking.startAt = nextStart.toUTC().toJSDate();
+    booking.endAt = nextEnd.toUTC().toJSDate();
+    await booking.save();
+    res.json({ success: true, data: booking });
+  }),
+);
+
+router.post(
+  '/:id/no-show',
+  requireRole('mentor'),
+  validate({
+    params: idParams,
+    body: z.object({ side: z.enum(['student', 'mentor']), reason: z.string().max(500).optional() }),
+  }),
+  asyncHandler(async (req, res) => {
+    const booking = await Booking.findOne({
+      _id: req.params.id,
+      mentor: req.user!.id,
+      status: 'confirmed',
+    });
+    if (!booking) throw ApiError.notFound('Confirmed booking not found');
+    booking.status = req.body.side === 'student' ? 'no_show_student' : 'no_show_mentor';
+    booking.mentorNotes = req.body.reason;
+    await booking.save();
+    await SlotLock.deleteMany({ booking: booking._id });
     res.json({ success: true, data: booking });
   }),
 );

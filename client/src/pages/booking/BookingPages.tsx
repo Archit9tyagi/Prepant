@@ -5,6 +5,7 @@ import { api } from '../../lib/api.js';
 import { Button } from '../../components/ui/button.js';
 import { Input } from '../../components/ui/input.js';
 import { Seo } from '../../components/common/Seo.js';
+import { useAuthStore } from '../../store/authStore.js';
 
 type Availability = {
   timezone: string;
@@ -67,50 +68,132 @@ export function MentorAvailability() {
 }
 
 export function Sessions() {
+  const user = useAuthStore((state) => state.user);
+  const [filter, setFilter] = useState<'upcoming' | 'past' | 'cancelled'>('upcoming');
+  const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState<
-    Array<{ _id: string; startAt: string; status: string; durationMins: number }>
+    Array<{ _id: string; startAt: string; status: string; durationMins: number; endAt?: string }>
   >([]);
   useEffect(() => {
-    void api.get('/bookings').then(({ data }) => setBookings(data.data));
+    void api
+      .get('/bookings')
+      .then(({ data }) => setBookings(data.data))
+      .catch(() => toast.error('Could not load sessions'))
+      .finally(() => setLoading(false));
   }, []);
+  const visible = bookings.filter((booking) => {
+    if (filter === 'cancelled') return booking.status.startsWith('cancelled');
+    if (filter === 'past')
+      return ['completed', 'no_show_student', 'no_show_mentor'].includes(booking.status);
+    return ['confirmed', 'pending_payment'].includes(booking.status);
+  });
+  const updateBooking = (id: string, status: string) =>
+    setBookings((current) => current.map((item) => (item._id === id ? { ...item, status } : item)));
   return (
     <div className="p-6">
       <Seo title="Sessions" />
       <h1 className="font-heading text-2xl font-bold">My sessions</h1>
-      <div className="mt-6 space-y-3">
-        {bookings.map((booking) => (
-          <div
-            key={booking._id}
-            className="flex items-center justify-between rounded-card border bg-white p-4"
+      <div className="mt-4 flex flex-wrap gap-2">
+        {(['upcoming', 'past', 'cancelled'] as const).map((item) => (
+          <Button
+            key={item}
+            size="sm"
+            variant={filter === item ? 'default' : 'outline'}
+            onClick={() => setFilter(item)}
           >
-            <div>
-              <p className="font-semibold">{new Date(booking.startAt).toLocaleString()}</p>
-              <p className="text-sm text-slate-500">
-                {booking.durationMins} minutes · {booking.status}
-              </p>
-            </div>
-            <div className="flex gap-2">
-              {booking.status === 'confirmed' && (
-                <Button asChild size="sm">
-                  <Link to={`/classroom/${booking._id}`}>Join</Link>
-                </Button>
-              )}
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  api
-                    .post(`/bookings/${booking._id}/cancel`, { reason: 'Changed plans' })
-                    .then(() => setBookings(bookings.filter((item) => item._id !== booking._id)))
-                    .catch(() => toast.error('Could not cancel session'))
-                }
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
+            {item[0].toUpperCase() + item.slice(1)}
+          </Button>
         ))}
-        {!bookings.length && <p className="text-slate-500">No sessions yet.</p>}
+      </div>
+      <div className="mt-6 space-y-3">
+        {loading && <p className="text-slate-500">Loading sessions...</p>}
+        {!loading &&
+          visible.map((booking) => (
+            <div
+              key={booking._id}
+              className="flex items-center justify-between rounded-card border bg-white p-4"
+            >
+              <div>
+                <p className="font-semibold">{new Date(booking.startAt).toLocaleString()}</p>
+                <p className="text-sm text-slate-500">
+                  {booking.durationMins} minutes · {booking.status}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                {booking.status === 'confirmed' && (
+                  <Button asChild size="sm">
+                    <Link to={`/classroom/${booking._id}`}>Join</Link>
+                  </Button>
+                )}
+                {booking.status === 'confirmed' && user?.role === 'student' && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const next = window.prompt('New start time (ISO format)');
+                        if (!next) return;
+                        void api
+                          .post(`/bookings/${booking._id}/reschedule`, { startAt: next })
+                          .then(({ data }) => {
+                            setBookings((current) =>
+                              current.map((item) =>
+                                item._id === booking._id ? { ...item, ...data.data } : item,
+                              ),
+                            );
+                            toast.success('Session rescheduled');
+                          })
+                          .catch(() => toast.error('Could not reschedule session'));
+                      }}
+                    >
+                      Reschedule
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        void api
+                          .post(`/bookings/${booking._id}/cancel`, { reason: 'Changed plans' })
+                          .then(({ data }) => updateBooking(booking._id, data.data.status))
+                          .catch(() => toast.error('Could not cancel session'))
+                      }
+                    >
+                      Cancel
+                    </Button>
+                  </>
+                )}
+                {booking.status === 'confirmed' && user?.role === 'mentor' && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        void api
+                          .post(`/bookings/${booking._id}/complete`)
+                          .then(({ data }) => updateBooking(booking._id, data.data.status))
+                          .catch(() => toast.error('Could not complete session'))
+                      }
+                    >
+                      Complete
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        void api
+                          .post(`/bookings/${booking._id}/no-show`, { side: 'student' })
+                          .then(({ data }) => updateBooking(booking._id, data.data.status))
+                          .catch(() => toast.error('Could not record no-show'))
+                      }
+                    >
+                      Student no-show
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        {!loading && !visible.length && <p className="text-slate-500">No sessions in this view.</p>}
       </div>
     </div>
   );

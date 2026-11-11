@@ -105,7 +105,10 @@ Only profiles with `status=approved` are returned publicly. Lead submissions are
 - `POST /api/v1/bookings` creates a pending payment booking and unique 15-minute slot locks.
 - `GET /api/v1/bookings`, `GET /api/v1/bookings/:id`
 - `POST /api/v1/bookings/:id/verify` confirms a mock or Razorpay payment idempotently.
-- `POST /api/v1/bookings/:id/cancel`, `POST /api/v1/bookings/:id/complete`
+- `POST /api/v1/bookings/:id/cancel` applies the configured notice window and records any eligible refund.
+- `POST /api/v1/bookings/:id/reschedule` (student) moves a confirmed booking once, acquiring replacement locks before releasing the old locks.
+- `POST /api/v1/bookings/:id/complete` (mentor) completes a confirmed booking.
+- `POST /api/v1/bookings/:id/no-show` (mentor, body `{ "side": "student" | "mentor", "reason"?: string }`) records a no-show outcome.
 - `GET /api/v1/bookings/:id/join` returns the Jitsi room during the join window.
 - `POST /api/v1/bookings/:id/review` creates one review after completion and updates mentor ratings.
 

@@ -1,5 +1,11 @@
 # Phase 6 — Dashboards and Operations
 
+## Phase 6.2 session controls
+
+- Added one-time student rescheduling with cancellation-window enforcement, replacement slot locking and collision protection.
+- Added mentor completion and student/mentor no-show outcomes with participant and state guards.
+- Added session tabs for upcoming, past and cancelled bookings plus role-specific controls in the dashboard.
+
 ## Delivered
 
 - Mentor dashboard with today/upcoming session counts and profile state.
