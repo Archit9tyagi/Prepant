@@ -102,7 +102,7 @@ The booking API generates timezone-aware slots, uses unique 15-minute locks to p
 
 Phase 5 adds authenticated favorites, learner/mentor conversations, persistent messages, unread/read state, in-app notifications and Socket.IO real-time updates. See [docs/phases/PHASE_5.md](docs/phases/PHASE_5.md).
 
-Phase 6 adds mentor dashboards, students and earnings views, payout requests, session rescheduling/no-show controls, plus admin operations for KPI stats, users, bookings, payments/refunds, payouts, reviews, leads, blog content, settings and audit logs. See [docs/phases/PHASE_6.md](docs/phases/PHASE_6.md).
+Phase 6 adds mentor dashboards, students and earnings views, payout requests, session rescheduling/no-show controls, plus admin operations for KPI stats, users, bookings, payments/refunds, payouts, reviews, leads, blog content, settings and audit logs. Phase 7 adds readiness checks, request IDs and deployment-aware proxy handling. See [docs/phases/PHASE_6.md](docs/phases/PHASE_6.md) and [docs/phases/PHASE_7.md](docs/phases/PHASE_7.md).
 
 ## Health Check & Styleguide
 

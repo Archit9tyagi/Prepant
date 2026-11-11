@@ -5,6 +5,7 @@ const envSchema = z.object({
   PORT: z.coerce.number().default(5000),
   CLIENT_URL: z.string().default('http://localhost:5173'),
   SERVER_URL: z.string().default('http://localhost:5000'),
+  TRUST_PROXY: z.coerce.number().int().min(0).default(1),
   MONGODB_URI: z.string().default('mongodb://127.0.0.1:27017/prepant'),
   JWT_ACCESS_SECRET: z.string().default('prepant-access-secret-minimum-32-chars-long-123'),
   JWT_REFRESH_SECRET: z.string().default('prepant-refresh-secret-minimum-32-chars-long-123'),

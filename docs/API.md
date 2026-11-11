@@ -28,6 +28,12 @@ Returns system status, uptime, and current ISO timestamp.
 }
 ```
 
+### `GET /api/v1/ready`
+
+Returns database readiness. It responds with `503` while MongoDB is unavailable
+and `200` with `database: "connected"` when the API can serve database-backed
+requests.
+
 ## Authentication
 
 All auth paths are under `/api/v1/auth`. Registration accepts `name`, `email`, `password`, `role` (`student` or `mentor`) and `consent: true`. Login and refresh return an in-memory access token. Refresh and logout require `X-Requested-With: prepant-web`; the rotating refresh token is an httpOnly cookie.

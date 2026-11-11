@@ -20,10 +20,11 @@ import availabilityRouter from './routes/availability.js';
 import bookingsRouter from './routes/bookings.js';
 import communityRouter from './routes/community.js';
 import operationsRouter from './routes/operations.js';
+import { requestId } from './middleware/requestId.js';
 
 export const app = express();
 
-app.set('trust proxy', 1);
+app.set('trust proxy', env.TRUST_PROXY);
 
 app.use(helmet());
 app.use(
@@ -36,6 +37,7 @@ app.use(compression());
 app.use(cookieParser());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(requestId);
 app.use(httpLogger);
 app.use(globalLimiter);
 app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));

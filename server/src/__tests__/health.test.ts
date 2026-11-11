@@ -19,4 +19,20 @@ describe('Health API', () => {
     expect(res.body).toHaveProperty('success', false);
     expect(res.body.error).toHaveProperty('code', 'ROUTE_NOT_FOUND');
   });
+
+  it('GET /api/v1/ready should report database readiness', async () => {
+    const res = await request(app).get('/api/v1/ready');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      success: true,
+      data: { status: 'ready', database: 'connected' },
+    });
+  });
+
+  it('adds a request id to responses', async () => {
+    const res = await request(app).get('/api/v1/health').set('x-request-id', 'test-request-id');
+
+    expect(res.headers['x-request-id']).toBe('test-request-id');
+  });
 });
