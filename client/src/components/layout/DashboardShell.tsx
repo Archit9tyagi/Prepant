@@ -19,6 +19,7 @@ import {
   Mail,
   Sliders,
   History,
+  Bell,
 } from 'lucide-react';
 import { Header } from './Header.js';
 import type { Role } from '../../types/index.js';
@@ -46,6 +47,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ role, children }
     { label: 'Favorites', href: '/app/favorites', icon: Heart },
     { label: 'Payments', href: '/app/payments', icon: CreditCard },
     { label: 'Settings', href: '/app/settings', icon: Settings },
+    { label: 'Notifications', href: '/app/notifications', icon: Bell },
   ];
 
   const mentorNav: NavItem[] = [
@@ -58,6 +60,7 @@ export const DashboardShell: React.FC<DashboardShellProps> = ({ role, children }
     { label: 'Profile', href: '/teach/onboarding', icon: User },
     { label: 'Reviews', href: '/teach/reviews', icon: Star },
     { label: 'Messages', href: '/teach/messages', icon: MessageSquare },
+    { label: 'Notifications', href: '/teach/notifications', icon: Bell },
   ];
 
   const adminNav: NavItem[] = [

@@ -9,7 +9,11 @@ import { MentorCard } from '../../components/common/MentorCard.js';
 import { Seo } from '../../components/common/Seo.js';
 import type { MentorCardData } from '../../types/index.js';
 
-type Mentor = MentorCardData & { experienceYears?: number; subjectIds?: string[] };
+type Mentor = MentorCardData & {
+  mentorId: string;
+  experienceYears?: number;
+  subjectIds?: string[];
+};
 const errorMessage = (error: unknown) =>
   (error as { response?: { data?: { error?: { message?: string } } } })?.response?.data?.error
     ?.message || 'Something went wrong';
@@ -88,6 +92,7 @@ export function MentorSearch() {
 
 export function MentorProfilePage({ slug }: { slug: string }) {
   const [mentor, setMentor] = useState<Mentor | null>(null);
+  const [saved, setSaved] = useState(false);
   useEffect(() => {
     void api
       .get(`/mentors/${slug}`)
@@ -136,9 +141,22 @@ export function MentorProfilePage({ slug }: { slug: string }) {
           <p className="font-bold">
             ₹{Math.round(mentor.hourlyRatePaise / 100).toLocaleString('en-IN')} / hour
           </p>
-          <Button asChild>
-            <Link to={`/book/${mentor.slug}`}>Book a trial</Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() =>
+                api
+                  .post(`/favorites/${mentor.mentorId}`)
+                  .then(() => setSaved(true))
+                  .catch(() => toast.error('Sign in to save mentors'))
+              }
+            >
+              {saved ? 'Saved' : 'Save mentor'}
+            </Button>
+            <Button asChild>
+              <Link to={`/book/${mentor.slug}`}>Book a trial</Link>
+            </Button>
+          </div>
         </div>
       </div>
     </main>

@@ -110,3 +110,20 @@ Only profiles with `status=approved` are returned publicly. Lead submissions are
 - `POST /api/v1/bookings/:id/review` creates one review after completion and updates mentor ratings.
 
 Money is stored in integer paise. Availability is expanded in the mentor's IANA timezone and returned as UTC-aware ISO times in the requested timezone. Mock payments are selected by default; Razorpay is selected only when `PAYMENTS_MODE=razorpay` and both keys are present.
+
+## Favorites, messaging and notifications
+
+All routes below require a bearer access token:
+
+- `GET /api/v1/favorites`
+- `POST /api/v1/favorites/:mentorId`
+- `DELETE /api/v1/favorites/:mentorId`
+- `GET /api/v1/conversations`
+- `POST /api/v1/conversations` with `{ "participantId": "..." }`
+- `GET /api/v1/conversations/:id/messages?before=&limit=`
+- `POST /api/v1/conversations/:id/messages` with `{ "body": "...", "attachments": [] }`
+- `POST /api/v1/conversations/:id/read`
+- `GET /api/v1/notifications`
+- `POST /api/v1/notifications/read-all`
+
+Messages are limited to 2,000 characters and are stored before the server emits Socket.IO events. Authenticated sockets join `user:<userId>`; clients can join `conversation:<conversationId>`. Events are `message:new`, `message:read` and `notification:new`.

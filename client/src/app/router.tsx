@@ -30,6 +30,11 @@ import {
   BlogPost,
 } from '../pages/public/PublicPages.js';
 import { Classroom, MentorAvailability, Sessions } from '../pages/booking/BookingPages.js';
+import {
+  FavoritesPage,
+  MessagesPage,
+  NotificationsPage,
+} from '../pages/community/CommunityPages.js';
 
 const Home = lazy(() => import('../pages/Home.js').then((m) => ({ default: m.Home })));
 const Styleguide = lazy(() =>
@@ -226,6 +231,66 @@ export const router = createBrowserRouter([
         <RequireRole roles={['student']}>
           <DashboardShell role="student">
             <Sessions />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/app/messages',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['student']}>
+          <DashboardShell role="student">
+            <MessagesPage />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/app/favorites',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['student']}>
+          <DashboardShell role="student">
+            <FavoritesPage />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/app/notifications',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['student']}>
+          <DashboardShell role="student">
+            <NotificationsPage />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/teach/messages',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['mentor']}>
+          <DashboardShell role="mentor">
+            <MessagesPage />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  },
+  {
+    path: '/teach/notifications',
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['mentor']}>
+          <DashboardShell role="mentor">
+            <NotificationsPage />
           </DashboardShell>
         </RequireRole>
       </RequireAuth>

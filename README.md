@@ -100,6 +100,8 @@ The public site includes mentor search/profile pages, the four-step `/find-my-me
 
 The booking API generates timezone-aware slots, uses unique 15-minute locks to prevent double booking, supports confirmation, cancellation/refunds, completion, classroom join windows and post-session reviews. See [docs/API.md](docs/API.md) for request contracts.
 
+Phase 5 adds authenticated favorites, learner/mentor conversations, persistent messages, unread/read state, in-app notifications and Socket.IO real-time updates. See [docs/phases/PHASE_5.md](docs/phases/PHASE_5.md).
+
 ## Health Check & Styleguide
 
 - **API Health Check**: `http://localhost:5000/api/v1/health`

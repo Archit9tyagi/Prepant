@@ -18,6 +18,7 @@ import path from 'node:path';
 import publicRouter from './routes/public.js';
 import availabilityRouter from './routes/availability.js';
 import bookingsRouter from './routes/bookings.js';
+import communityRouter from './routes/community.js';
 
 export const app = express();
 
@@ -69,6 +70,7 @@ app.use('/api/v1', taxonomyRouter);
 app.use('/api/v1/mentor', mentorRouter);
 app.use('/api/v1/mentor/availability', availabilityRouter);
 app.use('/api/v1/bookings', bookingsRouter);
+app.use('/api/v1', communityRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1', publicRouter);
 
