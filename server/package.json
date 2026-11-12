@@ -14,7 +14,8 @@
     "seed": "tsx src/seed/index.ts",
     "seed:reset": "tsx src/seed/index.ts --reset",
     "seed:users": "tsx src/seed/users.ts",
-    "seed:taxonomy": "tsx src/seed/taxonomy.ts"
+    "seed:taxonomy": "tsx src/seed/taxonomy.ts",
+    "seed:demo": "tsx src/seed/demo.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

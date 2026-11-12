@@ -30,6 +30,8 @@
   Tamil, Telugu, Marathi, Kannada and Punjabi
 - **Done:** Homepage mentors and KPI figures now load from database-backed
   endpoints, with honest empty/loading states instead of sample data
+- **Done:** Added opt-in development scale seeding for 100 mentors and 1,000
+  learners, with demo-only domains and production protection
 - **In progress:** Phase 11 scope and implementation planning
 - **Next:** Implement lesson-pack and coupon models, validation, protected APIs
   and integer-paise pricing tests
@@ -52,6 +54,9 @@ MongoDB must be reachable at `MONGODB_URI`. Tests use MongoDB Memory Server.
 - Docker is not available in the current environment, so Compose startup was not exercised.
 - The API requires MongoDB before it can bind and answer health checks.
 - Console email links are logged by the development email provider.
+- Demo scale data can be loaded with `DEMO_MENTORS=100 DEMO_STUDENTS=1000 npm run seed:demo`;
+  all generated accounts use the `demo.prepant.test` domain and password
+  `Demo@12345`.
 - The mock provider confirms payments immediately for local development; production Razorpay requires the documented environment keys.
 - Socket.IO requires the same access token used by REST and uses `VITE_SOCKET_URL` when configured.
 - Phase 7 deployment-owner gates remain external: no deployed environment,
