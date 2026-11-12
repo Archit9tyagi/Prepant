@@ -7,11 +7,13 @@ local tests.
 ## Application and security
 
 - [x] Production dependency audit is clean with `npm audit --omit=dev`.
+- [x] Reproducible repository gate passes with `npm run verify:release`.
 - [x] Helmet, exact-origin credentialed CORS, compression and rate limits are enabled.
 - [x] Uploads use memory storage and enforce MIME and size limits.
 - [x] Access tokens remain in memory; refresh tokens are hashed, rotated and cookie-bound.
 - [x] Admin mutations write audit records.
-- [ ] Run a security review against the deployed environment and confirm no secrets are present in Git.
+- [x] Repository secret scan found no committed credential assignments.
+- [ ] Run a security review against the deployed environment.
 - [ ] Set unique production JWT and encryption secrets in the platform secret store.
 - [ ] Set `COOKIE_SECURE=true`, the exact `CLIENT_URL`, and the correct `TRUST_PROXY`.
 
@@ -45,3 +47,7 @@ npm audit --omit=dev --audit-level=moderate
    complete it and submit a review.
 5. Verify an admin approval mutation appears in the audit log.
 6. Confirm a denied origin does not receive credentialed CORS headers.
+
+The repository-side evidence for this checklist is recorded in
+[RELEASE_SIGNOFF.md](./RELEASE_SIGNOFF.md). Deployment-specific checks remain
+open until a deployment owner runs them.

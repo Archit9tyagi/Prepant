@@ -15,8 +15,9 @@
 - **Done:** Phase 7.4 launch checklist and automated security-boundary checks
 - **Done:** Phase 7.5 Hindi locale, language switcher and client brand manifest
 - **Done:** Phase 7.6 acceptance matrix and locale regression coverage
-- **In progress:** Phase 7 hardening and production-readiness work
-- **Next:** Production sign-off: run deployment-specific smoke, Playwright/axe and infrastructure gates
+- **Done:** Repository release verification command and sign-off evidence
+- **In progress:** External production sign-off gates
+- **Next:** Deployment owner must run deployed smoke, Playwright/axe and infrastructure checks
 - **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md), [PHASE_5.md](./phases/PHASE_5.md), [PHASE_6.md](./phases/PHASE_6.md), [PHASE_7.md](./phases/PHASE_7.md)
 
 ## How to run

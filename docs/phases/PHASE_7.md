@@ -54,3 +54,10 @@ for the next post-Phase-6 workstream.
 - Explicitly kept deployment-specific smoke, Playwright and axe checks as
   manual release gates rather than claiming they ran without a configured
   browser/deployment environment.
+
+## Release sign-off
+
+- Added the cross-platform `npm run verify:release` gate for repository
+  verification.
+- Added `docs/RELEASE_SIGNOFF.md` with passing local evidence and the remaining
+  deployment-owner gates.

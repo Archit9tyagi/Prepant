@@ -13,6 +13,7 @@
     "typecheck": "npm run typecheck -w server && npm run typecheck -w client",
     "test": "npm run test -w server && npm run test -w client",
     "test:e2e": "npx playwright test",
+    "verify:release": "node scripts/verify-release.mjs",
     "seed": "npm run seed -w server",
     "seed:reset": "npm run seed:reset -w server",
     "seed:users": "npm run seed:users -w server",
