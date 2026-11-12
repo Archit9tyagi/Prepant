@@ -20,6 +20,13 @@ Acceptance: an admin can run the business from the panel exactly as listed in se
 
 ## Remaining chunks
 
-- Complete the admin client with server-side table controls, charts, lead notes,
-  payout rejection, CMS editing/preview and settings forms.
+- Complete the admin client with KPI charts, lead notes, CMS editing/preview and
+  settings forms.
 - Add focused acceptance coverage for admin mutations and audit visibility.
+
+## Chunk 8.2 — Admin workflow surfaces
+
+- Add admin users routing, server-side pagination, status filters and loading
+  states to the existing operations shell.
+- Add user block/unblock, CSV export, payout rejection and needs-review controls.
+- Add lead notes persistence.

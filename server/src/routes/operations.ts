@@ -475,16 +475,26 @@ router.patch(
   '/admin/leads/:id',
   validate({
     params: idParams,
-    body: z.object({ status: z.enum(['new', 'contacted', 'closed']) }),
+    body: z
+      .object({
+        status: z.enum(['new', 'contacted', 'closed']).optional(),
+        notes: z.string().max(2000).optional(),
+      })
+      .refine((value) => value.status !== undefined || value.notes !== undefined, {
+        message: 'Status or notes is required',
+      }),
   }),
   asyncHandler(async (req, res) => {
     const lead = await Lead.findByIdAndUpdate(
       req.params.id,
-      { status: req.body.status },
+      {
+        ...(req.body.status ? { status: req.body.status } : {}),
+        ...(req.body.notes !== undefined ? { notes: req.body.notes } : {}),
+      },
       { new: true },
     );
     if (!lead) throw ApiError.notFound('Lead not found');
-    await auditMutation(req.user!.id, `lead.${req.body.status}`, 'Lead', lead._id);
+    await auditMutation(req.user!.id, 'lead.updated', 'Lead', lead._id);
     res.json({ success: true, data: lead });
   }),
 );

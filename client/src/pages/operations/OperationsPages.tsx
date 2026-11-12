@@ -114,6 +114,7 @@ export function AdminOperations({
 }: {
   type:
     | 'stats'
+    | 'users'
     | 'bookings'
     | 'payments'
     | 'payouts'
@@ -124,31 +125,81 @@ export function AdminOperations({
     | 'audit';
 }) {
   const [data, setData] = useState<unknown[]>([]);
-  const [stats, setStats] = useState<Record<string, number> | null>(null);
+  const [stats, setStats] = useState<Record<string, unknown> | null>(null);
   const [reference, setReference] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [status, setStatus] = useState('');
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
+    setLoading(true);
+    const query = new URLSearchParams({ page: String(page), limit: '25' });
+    if (status && (type === 'leads' || type === 'bookings')) query.set('status', status);
     void api
-      .get(type === 'stats' ? '/admin/stats' : `/admin/${type}`)
+      .get(type === 'stats' ? '/admin/stats' : `/admin/${type}?${query}`)
       .then(({ data: response }) =>
-        type === 'stats' ? setStats(response.data) : setData(response.data),
+        type === 'stats'
+          ? setStats(response.data)
+          : (setData(response.data), setTotalPages(response.meta?.totalPages ?? 1)),
       );
-  }, [type]);
+  }, [page, status, type]);
+  useEffect(() => setPage(1), [type, status]);
   const label = type[0].toUpperCase() + type.slice(1);
+  const updateStatus = async (id: string, nextStatus: 'active' | 'blocked') => {
+    await api.patch(`/admin/users/${id}/status`, { status: nextStatus });
+    setData((current) =>
+      current.map((item) =>
+        (item as Row)._id === id ? { ...(item as Row), status: nextStatus } : item,
+      ),
+    );
+    toast.success(`User ${nextStatus}`);
+  };
   return (
     <div className="p-6">
       <Seo title={`Admin ${label}`} />
       <h1 className="font-heading text-2xl font-bold">{label}</h1>
       {stats ? (
         <div className="mt-6 grid gap-4 sm:grid-cols-4">
-          {Object.entries(stats).map(([key, value]) => (
-            <div className="rounded-card border bg-white p-5" key={key}>
-              <p className="text-sm text-slate-500">{key}</p>
-              <p className="mt-2 text-2xl font-bold">{value.toLocaleString()}</p>
-            </div>
-          ))}
+          {Object.entries(stats).map(
+            ([key, value]) =>
+              typeof value === 'number' && (
+                <div className="rounded-card border bg-white p-5" key={key}>
+                  <p className="text-sm text-slate-500">{key}</p>
+                  <p className="mt-2 text-2xl font-bold">{value.toLocaleString()}</p>
+                </div>
+              ),
+          )}
         </div>
       ) : (
         <div className="mt-6 space-y-3">
+          {(type === 'leads' || type === 'bookings') && (
+            <select
+              className="rounded border p-2"
+              value={status}
+              onChange={(event) => setStatus(event.target.value)}
+            >
+              <option value="">All statuses</option>
+              {type === 'leads' ? (
+                <>
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="closed">Closed</option>
+                </>
+              ) : (
+                <>
+                  <option value="needs_review">Needs review</option>
+                  <option value="confirmed">Confirmed</option>
+                  <option value="completed">Completed</option>
+                </>
+              )}
+            </select>
+          )}
+          {type === 'leads' && (
+            <Button onClick={() => window.open('/api/v1/admin/leads.csv', '_blank')}>
+              Export CSV
+            </Button>
+          )}
+          {loading && <p className="text-slate-500">Loading…</p>}
           {data.map((item) => {
             const row = item as Row;
             return (
@@ -162,6 +213,15 @@ export function AdminOperations({
                     {row.status || row.email || row.createdAt}
                   </p>
                 </div>
+                {type === 'users' && (
+                  <Button
+                    onClick={() =>
+                      void updateStatus(row._id, row.status === 'blocked' ? 'active' : 'blocked')
+                    }
+                  >
+                    {row.status === 'blocked' ? 'Unblock' : 'Block'}
+                  </Button>
+                )}
                 {type === 'payouts' && row.status === 'requested' && (
                   <div className="flex gap-2">
                     <Input
@@ -178,12 +238,43 @@ export function AdminOperations({
                     >
                       Mark paid
                     </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() =>
+                        api
+                          .post(`/admin/payouts/${row._id}/reject`, { note: 'Rejected by admin' })
+                          .then(() => toast.success('Payout rejected'))
+                      }
+                    >
+                      Reject
+                    </Button>
                   </div>
                 )}
               </div>
             );
           })}
           {!data.length && <p className="text-slate-500">No records found.</p>}
+          {totalPages > 1 && (
+            <div className="flex items-center gap-3 pt-3">
+              <Button
+                variant="outline"
+                disabled={page === 1}
+                onClick={() => setPage((value) => value - 1)}
+              >
+                Previous
+              </Button>
+              <span className="text-sm text-slate-500">
+                Page {page} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                disabled={page >= totalPages}
+                onClick={() => setPage((value) => value + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

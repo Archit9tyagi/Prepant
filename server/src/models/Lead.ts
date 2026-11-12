@@ -7,6 +7,7 @@ const leadSchema = new Schema(
     email: { type: String, trim: true, lowercase: true },
     interest: { type: String, required: true, maxlength: 160 },
     message: { type: String, maxlength: 2000 },
+    notes: { type: String, maxlength: 2000, default: '' },
     source: { type: String, default: 'contact' },
     status: { type: String, enum: ['new', 'contacted', 'closed'], default: 'new', index: true },
   },

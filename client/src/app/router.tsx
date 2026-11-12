@@ -359,20 +359,30 @@ export const router = createBrowserRouter([
       </RequireAuth>
     ),
   },
-  ...(['bookings', 'payments', 'payouts', 'reviews', 'leads', 'blog', 'audit'] as const).map(
-    (type) => ({
-      path: `/admin/${type}`,
-      element: (
-        <RequireAuth>
-          <RequireRole roles={['admin']}>
-            <DashboardShell role="admin">
-              <AdminOperations type={type} />
-            </DashboardShell>
-          </RequireRole>
-        </RequireAuth>
-      ),
-    }),
-  ),
+  ...(
+    [
+      'users',
+      'bookings',
+      'payments',
+      'payouts',
+      'reviews',
+      'leads',
+      'blog',
+      'settings',
+      'audit',
+    ] as const
+  ).map((type) => ({
+    path: `/admin/${type}`,
+    element: (
+      <RequireAuth>
+        <RequireRole roles={['admin']}>
+          <DashboardShell role="admin">
+            <AdminOperations type={type} />
+          </DashboardShell>
+        </RequireRole>
+      </RequireAuth>
+    ),
+  })),
 ]);
 
 function MentorProfileRoute() {

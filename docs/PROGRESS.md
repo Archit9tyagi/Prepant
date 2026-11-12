@@ -3,7 +3,7 @@
 ## Current status
 
 - **Phase:** 8 — Admin panel, payouts, CMS, leads and analytics
-- **Chunk:** 8.1 — Admin API completion
+- **Chunk:** 8.2 — Admin workflow surfaces
 - **Done:** Phase 3 public discovery, taxonomy/exam landing APIs, mentor search/profile, lead capture, blog endpoints, sitemap/robots, quiz and public pages
 - **Done:** Availability editor/API, timezone-aware slot generation, unique slot locks, bookings, mock/Razorpay payment providers, confirmation, cancellation, classroom join, completion and reviews
 - **Done:** Favorites, conversations, messages, unread/read state, in-app notifications, Socket.IO authentication/events and student/mentor community screens
@@ -19,9 +19,11 @@
 - **Done:** Phase 7 repository hardening, release verification and launch evidence
 - **Done:** Phase 8.1 admin KPI series, user controls, booking filters, payout
   rejection, lead filters/CSV, post CRUD and mutation audit coverage
-- **In progress:** Phase 8 admin client completion
-- **Next:** Add server-side admin tables, charts, lead notes, CMS editor, settings
-  forms and complete audit acceptance coverage
+- **Done:** Phase 8.2 admin users route, pagination/status filters, CSV export,
+  payout rejection controls, needs-review filter and lead notes
+- **In progress:** Phase 8 admin dashboard and CMS completion
+- **Next:** Add KPI charts, lead notes editor, markdown CMS editor/preview,
+  settings forms and complete audit acceptance coverage
 - **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md), [PHASE_5.md](./phases/PHASE_5.md), [PHASE_6.md](./phases/PHASE_6.md), [PHASE_7.md](./phases/PHASE_7.md), [PHASE_8.md](./phases/PHASE_8.md)
 
 ## How to run
