@@ -20,6 +20,19 @@ describe('public marketplace', () => {
     });
   });
 
+  it('filters mentors when a real category slug is selected', async () => {
+    const category = await Category.create({
+      name: 'Category filter test',
+      slug: `category-filter-${Date.now()}`,
+      icon: 'BookOpen',
+    });
+    const response = await request(app).get(`/api/v1/mentors?category=${category!.slug}`);
+    expect(response.status).toBe(200);
+    expect(
+      response.body.data.every((mentor: { subjects: string[] }) => mentor.subjects.length > 0),
+    ).toBe(true);
+  });
+
   it('lists approved mentors and stores lead submissions', async () => {
     const category = await Category.create({
       name: 'Public Test',

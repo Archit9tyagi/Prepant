@@ -28,16 +28,37 @@ const subjects = await Subject.find({ isActive: true }).select('_id name').lean(
 if (!subjects.length) throw new Error('Seed taxonomy first with npm run seed:taxonomy');
 
 const passwordHash = await bcrypt.hash('Demo@12345', 10);
+const mentorNames = [
+  'Aarav Mehta',
+  'Ananya Iyer',
+  'Vihaan Kapoor',
+  'Diya Nair',
+  'Arjun Reddy',
+  'Meera Joshi',
+  'Kabir Singh',
+  'Ishita Rao',
+  'Aditya Shah',
+  'Kavya Menon',
+];
 const users = Array.from({ length: mentorCount + studentCount }, (_, index) => {
   const mentor = index < mentorCount;
   const number = String(mentor ? index + 1 : index - mentorCount + 1).padStart(4, '0');
+  const mentorName = mentorNames[index % mentorNames.length];
   return {
-    name: `${mentor ? 'Demo Mentor' : 'Demo Learner'} ${number}`,
+    name: mentor ? `${mentorName} ${number}` : `Demo Learner ${number}`,
     email: `${mentor ? 'mentor' : 'student'}-${number}@demo.prepant.test`,
     role: mentor ? ('mentor' as const) : ('student' as const),
     passwordHash,
     emailVerifiedAt: new Date(),
     status: 'active' as const,
+    ...(mentor
+      ? {
+          avatar: {
+            url: `https://api.dicebear.com/9.x/initials/svg?seed=${encodeURIComponent(mentorName)}-${number}`,
+            publicId: `demo-avatar-${number}`,
+          },
+        }
+      : {}),
   };
 });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Check, Search, Sparkles, Users, Video, Star, GraduationCap } from 'lucide-react';
 import { Button } from '../components/ui/button.js';
 import { CategoryTile } from '../components/common/CategoryTile.js';
@@ -21,6 +21,7 @@ type HomeStats = {
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [mentors, setMentors] = useState<MentorCardData[]>([]);
   const [stats, setStats] = useState<HomeStats | null>(null);
   useEffect(() => {
@@ -100,7 +101,7 @@ export const Home: React.FC = () => {
           <SectionHeader
             title={t('home.explore')}
             subtitle={t('home.exploreSub')}
-            action={{ label: t('home.viewMentors'), href: '/mentors' }}
+            action={{ label: t('home.viewMentors'), onClick: () => navigate('/mentors') }}
           />
 
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
@@ -110,6 +111,7 @@ export const Home: React.FC = () => {
                 name={category.name}
                 slug={category.slug}
                 icon={category.icon}
+                onClick={() => navigate(`/mentors?category=${category.slug}`)}
               />
             ))}
           </div>

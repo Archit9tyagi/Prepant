@@ -21,6 +21,7 @@ type Profile = {
   experienceYears?: number;
   introVideo?: { provider: 'youtube' | 'vimeo' | 'upload'; url: string };
   payout?: { method: 'upi' | 'bank'; encryptedDetails: string };
+  avatar?: { url?: string };
 };
 
 const errorMessage = (error: unknown) =>
@@ -83,6 +84,8 @@ export function MentorOnboarding() {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const user = useAuthStore((state) => state.user);
+  const [subjects, setSubjects] = useState<Array<{ _id: string; name: string }>>([]);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   useEffect(() => {
     void api
@@ -90,6 +93,9 @@ export function MentorOnboarding() {
       .then(({ data }) => setProfile(data.data))
       .catch((error) => toast.error(errorMessage(error)))
       .finally(() => setLoading(false));
+  }, []);
+  useEffect(() => {
+    void api.get('/subjects?limit=100').then(({ data }) => setSubjects(data.data));
   }, []);
 
   const update = (key: keyof Profile, value: unknown) =>
@@ -110,6 +116,19 @@ export function MentorOnboarding() {
       toast.success('Profile sent for review');
     } catch (error) {
       toast.error(errorMessage(error));
+    }
+  };
+  const uploadPhoto = async (file: File) => {
+    setPhotoUploading(true);
+    try {
+      const form = new FormData();
+      form.append('avatar', file);
+      await api.post('/users/me/avatar', form);
+      toast.success('Profile photo uploaded');
+    } catch (error) {
+      toast.error(errorMessage(error));
+    } finally {
+      setPhotoUploading(false);
     }
   };
 
@@ -135,6 +154,19 @@ export function MentorOnboarding() {
         {step === 0 && (
           <div className="space-y-4">
             <h1 className="font-heading text-2xl font-bold">Tell learners about you</h1>
+            <div className="space-y-2">
+              <Label>Profile photo</Label>
+              <Input
+                type="file"
+                accept="image/*"
+                disabled={photoUploading}
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) void uploadPhoto(file);
+                }}
+              />
+              <p className="text-xs text-slate-500">Use a clear face photo, up to 5 MB.</p>
+            </div>
             <Field
               label="Headline"
               value={profile.headline || ''}
@@ -159,20 +191,54 @@ export function MentorOnboarding() {
               value={String(profile.hourlyRatePaise || '')}
               onChange={(value) => update('hourlyRatePaise', Number(value))}
             />
-            <Field
-              label="Subjects (comma separated IDs)"
-              value={(profile.subjects || []).map((item) => item.subject).join(',')}
-              onChange={(value) =>
-                update(
-                  'subjects',
-                  value
-                    .split(',')
-                    .filter(Boolean)
-                    .map((subject) => ({
-                      subject: subject.trim(),
+            <div className="space-y-1">
+              <Label>Categories and subjects you teach</Label>
+              <select
+                multiple
+                className="min-h-40 w-full rounded-[10px] border p-3 text-sm"
+                value={(profile.subjects || []).map((item) => item.subject)}
+                onChange={(event) =>
+                  update(
+                    'subjects',
+                    Array.from(event.target.selectedOptions, (option) => ({
+                      subject: option.value,
                       levels: ['beginner'],
                       boards: [],
                     })),
+                  )
+                }
+              >
+                {subjects.map((subject) => (
+                  <option key={subject._id} value={subject._id}>
+                    {subject.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-500">Select every subject you can teach.</p>
+            </div>
+            <Field
+              label="Teaching languages (codes, comma separated)"
+              value={(profile.languages || []).map((item) => item.code).join(',')}
+              onChange={(value) =>
+                update(
+                  'languages',
+                  value
+                    .split(',')
+                    .filter(Boolean)
+                    .map((code) => ({ code: code.trim(), level: 'fluent' })),
+                )
+              }
+            />
+            <Field
+              label="Session durations (minutes, comma separated)"
+              value={(profile.durations || [30, 60]).join(',')}
+              onChange={(value) =>
+                update(
+                  'durations',
+                  value
+                    .split(',')
+                    .map(Number)
+                    .filter((duration) => duration >= 30 && duration <= 180),
                 )
               }
             />

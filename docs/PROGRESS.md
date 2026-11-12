@@ -32,6 +32,8 @@
   endpoints, with honest empty/loading states instead of sample data
 - **Done:** Added opt-in development scale seeding for 100 mentors and 1,000
   learners, with demo-only domains and production protection
+- **Done:** Category tiles now navigate to real category-filtered mentor results;
+  mentor onboarding supports subject selection and profile-photo upload
 - **In progress:** Phase 11 scope and implementation planning
 - **Next:** Implement lesson-pack and coupon models, validation, protected APIs
   and integer-paise pricing tests

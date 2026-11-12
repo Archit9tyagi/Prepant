@@ -138,6 +138,7 @@ router.get(
 const mentorQuery = z.object({
   q: z.string().trim().max(100).optional(),
   subject: z.string().optional(),
+  category: z.string().optional(),
   minPrice: z.coerce.number().int().min(0).optional(),
   maxPrice: z.coerce.number().int().min(0).optional(),
   rating: z.coerce.number().min(0).max(5).optional(),
@@ -188,6 +189,15 @@ router.get(
     const query = req.query as unknown as z.infer<typeof mentorQuery>;
     const filter: Record<string, unknown> = { status: 'approved' };
     if (query.subject) filter['subjects.subject'] = query.subject;
+    if (query.category) {
+      const category = await Category.findOne({ slug: query.category, isActive: true }).select(
+        '_id',
+      );
+      const subjects = category
+        ? await Subject.find({ category: category._id, isActive: true }).select('_id')
+        : [];
+      filter['subjects.subject'] = { $in: subjects.map((subject) => subject._id) };
+    }
     if (query.minPrice !== undefined || query.maxPrice !== undefined) {
       filter.hourlyRatePaise = {
         ...(query.minPrice !== undefined ? { $gte: query.minPrice } : {}),
