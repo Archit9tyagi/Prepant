@@ -51,6 +51,11 @@ secret manager. Set the health check path to `/api/v1/ready`, allow the
 platform's proxy through `TRUST_PROXY`, and keep MongoDB network access
 restricted to the API service.
 
+For a native Render Node service, use the repository `render.yaml` or set the
+build command to `npm install --include=dev && npm run build`. The build needs
+TypeScript, esbuild, and type packages from `devDependencies`; Render should
+not omit them until after the build. Use `npm run start` as the start command.
+
 ## Vercel or Netlify client
 
 Build the client with `npm run build -w client` and deploy `client/dist`.

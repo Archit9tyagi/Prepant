@@ -36,6 +36,8 @@
   mentor onboarding supports subject selection and profile-photo upload
 - **Done:** Render installs now skip unavailable production Husky hooks while
   preserving local hook setup; Docker build stages copy the guarded installer
+- **Done:** Added native Render configuration to retain build-time
+  devDependencies and pin the Node runtime to 22.x
 - **In progress:** Phase 11 scope and implementation planning
 - **Next:** Implement lesson-pack and coupon models, validation, protected APIs
   and integer-paise pricing tests

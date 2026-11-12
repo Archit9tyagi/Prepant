@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: prepant-api
+    runtime: node
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/v1/ready
