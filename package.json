@@ -19,7 +19,7 @@
     "seed:users": "npm run seed:users -w server",
     "seed:taxonomy": "npm run seed:taxonomy -w server",
     "seed:demo": "npm run seed:demo -w server",
-    "prepare": "husky"
+    "prepare": "node scripts/prepare.mjs"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

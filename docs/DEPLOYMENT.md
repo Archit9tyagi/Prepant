@@ -22,6 +22,10 @@ Copy `server/.env.example` to the deployment secret store and set, at minimum:
 
 Do not commit `.env` files or place credentials in the client environment.
 
+The root `prepare` script uses a guarded Node runner for Husky. Local installs
+with devDependencies configure Git hooks; production installs that omit
+devDependencies skip Husky setup without failing the deployment.
+
 ## Container
 
 The production image is built from `server/Dockerfile`:

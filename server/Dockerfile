@@ -7,6 +7,7 @@ COPY package*.json ./
 COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 COPY tsconfig.base.json ./
+COPY scripts/prepare.mjs ./scripts/prepare.mjs
 
 RUN npm ci
 
@@ -26,6 +27,7 @@ ENV PORT=5000
 COPY package*.json ./
 COPY client/package*.json ./client/
 COPY server/package*.json ./server/
+COPY scripts/prepare.mjs ./scripts/prepare.mjs
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/server/dist ./dist

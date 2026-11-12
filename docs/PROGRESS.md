@@ -34,6 +34,8 @@
   learners, with demo-only domains and production protection
 - **Done:** Category tiles now navigate to real category-filtered mentor results;
   mentor onboarding supports subject selection and profile-photo upload
+- **Done:** Render installs now skip unavailable production Husky hooks while
+  preserving local hook setup; Docker build stages copy the guarded installer
 - **In progress:** Phase 11 scope and implementation planning
 - **Next:** Implement lesson-pack and coupon models, validation, protected APIs
   and integer-paise pricing tests
