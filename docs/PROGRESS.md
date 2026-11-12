@@ -38,6 +38,8 @@
   preserving local hook setup; Docker build stages copy the guarded installer
 - **Done:** Added native Render configuration to retain build-time
   devDependencies and pin the Node runtime to 22.x
+- **Done:** Added an npm repository policy so existing Render services using
+  `npm install && npm run build` also retain build-time dependencies
 - **In progress:** Phase 11 scope and implementation planning
 - **Next:** Implement lesson-pack and coupon models, validation, protected APIs
   and integer-paise pricing tests

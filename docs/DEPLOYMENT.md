@@ -52,9 +52,11 @@ platform's proxy through `TRUST_PROXY`, and keep MongoDB network access
 restricted to the API service.
 
 For a native Render Node service, use the repository `render.yaml` or set the
-build command to `npm install --include=dev && npm run build`. The build needs
-TypeScript, esbuild, and type packages from `devDependencies`; Render should
-not omit them until after the build. Use `npm run start` as the start command.
+build command to `npm install --include=dev && npm run build`. The repository
+also sets npm's `include=dev` policy so the fallback command
+`npm install && npm run build` works when Render sets `NODE_ENV=production`.
+The build needs TypeScript, esbuild, and type packages from `devDependencies`;
+use `npm run start` as the start command.
 
 ## Vercel or Netlify client
 
