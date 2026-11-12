@@ -4,6 +4,7 @@ import { api } from '../../lib/api.js';
 import { Button } from '../../components/ui/button.js';
 import { Input } from '../../components/ui/input.js';
 import { Seo } from '../../components/common/Seo.js';
+import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 type Dashboard = {
   todaySessions: number;
@@ -20,6 +21,15 @@ type Row = {
   name?: string;
   email?: string;
   reference?: string;
+  contentMarkdown?: string;
+  notes?: string;
+};
+type AdminStats = {
+  users: number;
+  mentors: number;
+  bookings: number;
+  gmvPaise: number;
+  bookingsByDay?: Array<{ _id: string; bookings: number; gmvPaise: number }>;
 };
 
 export function MentorDashboard() {
@@ -125,7 +135,7 @@ export function AdminOperations({
     | 'audit';
 }) {
   const [data, setData] = useState<unknown[]>([]);
-  const [stats, setStats] = useState<Record<string, unknown> | null>(null);
+  const [stats, setStats] = useState<AdminStats | null>(null);
   const [reference, setReference] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -159,17 +169,39 @@ export function AdminOperations({
       <Seo title={`Admin ${label}`} />
       <h1 className="font-heading text-2xl font-bold">{label}</h1>
       {stats ? (
-        <div className="mt-6 grid gap-4 sm:grid-cols-4">
-          {Object.entries(stats).map(
-            ([key, value]) =>
-              typeof value === 'number' && (
-                <div className="rounded-card border bg-white p-5" key={key}>
-                  <p className="text-sm text-slate-500">{key}</p>
-                  <p className="mt-2 text-2xl font-bold">{value.toLocaleString()}</p>
-                </div>
-              ),
-          )}
-        </div>
+        <>
+          <div className="mt-6 grid gap-4 sm:grid-cols-4">
+            {[
+              ['Users', stats.users.toLocaleString()],
+              ['Mentors', stats.mentors.toLocaleString()],
+              ['Bookings', stats.bookings.toLocaleString()],
+              ['GMV', `₹${(stats.gmvPaise / 100).toLocaleString('en-IN')}`],
+            ].map(([key, value]) => (
+              <div className="rounded-card border bg-white p-5" key={key}>
+                <p className="text-sm text-slate-500">{key}</p>
+                <p className="mt-2 text-2xl font-bold">{value}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 rounded-card border bg-white p-5">
+            <h2 className="font-heading text-lg font-bold">Bookings per day</h2>
+            <div className="mt-4 h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stats.bookingsByDay ?? []}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="_id" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="bookings" fill="#2563eb" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </>
+      ) : type === 'blog' ? (
+        <BlogEditor />
+      ) : type === 'settings' ? (
+        <SettingsEditor />
       ) : (
         <div className="mt-6 space-y-3">
           {(type === 'leads' || type === 'bookings') && (
@@ -212,6 +244,9 @@ export function AdminOperations({
                   <p className="text-sm text-slate-500">
                     {row.status || row.email || row.createdAt}
                   </p>
+                  {type === 'leads' && row.notes && (
+                    <p className="text-sm text-slate-500">Notes: {row.notes}</p>
+                  )}
                 </div>
                 {type === 'users' && (
                   <Button
@@ -277,6 +312,74 @@ export function AdminOperations({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function BlogEditor() {
+  const [title, setTitle] = useState('');
+  const [slug, setSlug] = useState('');
+  const [contentMarkdown, setContentMarkdown] = useState('');
+  const save = async () => {
+    try {
+      await api.post('/admin/blog', { title, slug, contentMarkdown, tags: [], status: 'draft' });
+      toast.success('Draft saved');
+    } catch {
+      toast.error('Could not save draft');
+    }
+  };
+  return (
+    <div className="mt-6 grid gap-4 lg:grid-cols-2">
+      <div className="space-y-3 rounded-card border bg-white p-5">
+        <Input
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          placeholder="Title"
+        />
+        <Input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="Slug" />
+        <textarea
+          className="min-h-64 w-full rounded-[10px] border border-slate-200 p-3 text-sm"
+          value={contentMarkdown}
+          onChange={(event) => setContentMarkdown(event.target.value)}
+          placeholder="Markdown content"
+        />
+        <Button onClick={() => void save()}>Save draft</Button>
+      </div>
+      <article className="rounded-card border bg-white p-5">
+        <h2 className="font-heading text-lg font-bold">Preview</h2>
+        <pre className="mt-3 whitespace-pre-wrap text-sm">
+          {contentMarkdown || 'Start writing to preview.'}
+        </pre>
+      </article>
+    </div>
+  );
+}
+
+function SettingsEditor() {
+  const [key, setKey] = useState('booking');
+  const [value, setValue] = useState('{"commissionPercent":20}');
+  const save = async () => {
+    try {
+      await api.patch(`/admin/settings/${key}`, { value: JSON.parse(value) });
+      toast.success('Settings saved');
+    } catch {
+      toast.error('Settings must be valid JSON');
+    }
+  };
+  return (
+    <div className="mt-6 max-w-xl space-y-3 rounded-card border bg-white p-5">
+      <Input
+        value={key}
+        onChange={(event) => setKey(event.target.value)}
+        placeholder="Setting key"
+      />
+      <textarea
+        className="min-h-48 w-full rounded-[10px] border border-slate-200 p-3 font-mono text-sm"
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        aria-label="Setting JSON value"
+      />
+      <Button onClick={() => void save()}>Save settings</Button>
     </div>
   );
 }

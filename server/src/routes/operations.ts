@@ -527,6 +527,7 @@ router.post(
       author: req.user!.id,
       publishedAt: req.body.status === 'published' ? new Date() : undefined,
     });
+    await auditMutation(req.user!.id, 'post.created', 'Post', post._id);
     res.status(201).json({ success: true, data: post });
   }),
 );

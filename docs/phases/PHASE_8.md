@@ -30,3 +30,10 @@ Acceptance: an admin can run the business from the panel exactly as listed in se
   states to the existing operations shell.
 - Add user block/unblock, CSV export, payout rejection and needs-review controls.
 - Add lead notes persistence.
+
+## Chunk 8.3 — Analytics and content surfaces
+
+- Add Recharts bookings-per-day visualization and KPI cards to the admin
+  dashboard.
+- Add markdown draft editor with preview and settings JSON editor.
+- Add post-created audit evidence and expose lead notes in the inbox.
