@@ -2,8 +2,8 @@
 
 ## Current status
 
-- **Phase:** 8 — Admin panel, payouts, CMS, leads and analytics
-- **Chunk:** 8.4 — CMS completion
+- **Phase:** 11 — V1 lesson-pack and coupon foundations
+- **Chunk:** 11.0 — Scope and handoff
 - **Done:** Phase 3 public discovery, taxonomy/exam landing APIs, mentor search/profile, lead capture, blog endpoints, sitemap/robots, quiz and public pages
 - **Done:** Availability editor/API, timezone-aware slot generation, unique slot locks, bookings, mock/Razorpay payment providers, confirmation, cancellation, classroom join, completion and reviews
 - **Done:** Favorites, conversations, messages, unread/read state, in-app notifications, Socket.IO authentication/events and student/mentor community screens
@@ -24,10 +24,13 @@
 - **Done:** Phase 8.3 KPI cards/chart, markdown draft preview, settings editor
   and post-created audit coverage
 - **Done:** Phase 8.4 CMS cover upload and expanded admin mutation/audit tests
-- **In progress:** Phase 9/10 launch handoff
-- **Next:** Record Phase 9 hardening completion, complete Phase 10 launch
-  operations handoff, then begin Phase 11 V1 lesson-pack/coupon foundations
+- **Done:** Phase 9 repository hardening and launch evidence
+- **Done:** Phase 10 launch-operations handoff documentation
+- **In progress:** Phase 11 scope and implementation planning
+- **Next:** Implement lesson-pack and coupon models, validation, protected APIs
+  and integer-paise pricing tests
 - **Phase notes:** [PHASE_3.md](./phases/PHASE_3.md), [PHASE_4.md](./phases/PHASE_4.md), [PHASE_5.md](./phases/PHASE_5.md), [PHASE_6.md](./phases/PHASE_6.md), [PHASE_7.md](./phases/PHASE_7.md), [PHASE_8.md](./phases/PHASE_8.md)
+- **Current phase notes:** [PHASE_9.md](./phases/PHASE_9.md), [PHASE_10.md](./phases/PHASE_10.md), [PHASE_11.md](./phases/PHASE_11.md)
 
 ## How to run
 
