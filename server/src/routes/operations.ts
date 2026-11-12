@@ -15,6 +15,7 @@ import { Post } from '../models/Post.js';
 import { Setting } from '../models/Setting.js';
 import { User } from '../models/User.js';
 import { AuditLog } from '../models/AuditLog.js';
+import { MentorProfile } from '../models/MentorProfile.js';
 import { getPaymentProvider } from '../providers/index.js';
 
 const router = Router();
@@ -23,6 +24,20 @@ const pageQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(25),
 });
+const auditMutation = async (
+  actor: string,
+  action: string,
+  entityType: string,
+  entityId: unknown,
+  metadata?: Record<string, unknown>,
+) =>
+  AuditLog.create({
+    actor,
+    action,
+    entityType,
+    entityId,
+    ...(metadata ? { metadata } : {}),
+  });
 
 router.get(
   '/mentor/dashboard',
@@ -47,9 +62,7 @@ router.get(
         { $match: { mentor: req.user!.id } },
         { $group: { _id: '$status', totalPaise: { $sum: '$amountPaise' } } },
       ]),
-      (await import('../models/MentorProfile.js')).MentorProfile.findOne({ user: req.user!.id })
-        .select('completeness stats status')
-        .lean(),
+      MentorProfile.findOne({ user: req.user!.id }).select('completeness stats status').lean(),
     ]);
     res.json({ success: true, data: { todaySessions: today, upcoming, earnings, profile } });
   }),
@@ -143,7 +156,7 @@ router.use('/admin', authenticate, requireRole('admin'));
 router.get(
   '/admin/stats',
   asyncHandler(async (_req, res) => {
-    const [users, mentors, bookings, captured] = await Promise.all([
+    const [users, mentors, bookings, captured, funnel, series] = await Promise.all([
       User.countDocuments({ deletedAt: { $exists: false } }),
       User.countDocuments({ role: 'mentor', deletedAt: { $exists: false } }),
       Booking.countDocuments(),
@@ -151,10 +164,29 @@ router.get(
         { $match: { status: 'captured' } },
         { $group: { _id: null, totalPaise: { $sum: '$amountPaise' } } },
       ]),
+      MentorProfile.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
+      Booking.aggregate([
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+            bookings: { $sum: 1 },
+            gmvPaise: { $sum: '$price.amountPaise' },
+          },
+        },
+        { $sort: { _id: -1 } },
+        { $limit: 30 },
+      ]),
     ]);
     res.json({
       success: true,
-      data: { users, mentors, bookings, gmvPaise: captured[0]?.totalPaise ?? 0 },
+      data: {
+        users,
+        mentors,
+        bookings,
+        gmvPaise: captured[0]?.totalPaise ?? 0,
+        mentorFunnel: funnel,
+        bookingsByDay: series.reverse(),
+      },
     });
   }),
 );
@@ -181,19 +213,43 @@ router.get(
   }),
 );
 
+router.patch(
+  '/admin/users/:id/status',
+  validate({
+    params: idParams,
+    body: z.object({ status: z.enum(['active', 'blocked']) }),
+  }),
+  asyncHandler(async (req, res) => {
+    if (req.params.id === req.user!.id) throw ApiError.badRequest('You cannot block yourself');
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, deletedAt: { $exists: false } },
+      { status: req.body.status },
+      { new: true, projection: '-passwordHash' },
+    );
+    if (!user) throw ApiError.notFound('User not found');
+    await auditMutation(req.user!.id, `user.${req.body.status}`, 'User', user._id);
+    res.json({ success: true, data: user });
+  }),
+);
+
 router.get(
   '/admin/bookings',
-  validate({ query: pageQuery }),
+  validate({
+    query: pageQuery.extend({
+      status: z.string().optional(),
+    }),
+  }),
   asyncHandler(async (req, res) => {
-    const query = req.query as unknown as { page: number; limit: number };
+    const query = req.query as unknown as { page: number; limit: number; status?: string };
+    const filter = query.status ? { status: query.status } : {};
     const [data, total] = await Promise.all([
-      Booking.find()
+      Booking.find(filter)
         .sort({ startAt: -1 })
         .skip((query.page - 1) * query.limit)
         .limit(query.limit)
         .populate('student mentor subject', 'name email')
         .lean(),
-      Booking.countDocuments(),
+      Booking.countDocuments(filter),
     ]);
     res.json({
       success: true,
@@ -246,12 +302,8 @@ router.post(
       at: new Date(),
     });
     await payment.save();
-    await AuditLog.create({
-      actor: req.user!.id,
-      action: 'payment.refunded',
-      entityType: 'Payment',
-      entityId: payment._id,
-      metadata: { amountPaise: amount },
+    await auditMutation(req.user!.id, 'payment.refunded', 'Payment', payment._id, {
+      amountPaise: amount,
     });
     res.json({ success: true, data: payment });
   }),
@@ -293,12 +345,25 @@ router.post(
       { mentor: payout.mentor, status: 'available' },
       { $set: { status: 'paid' } },
     );
-    await AuditLog.create({
-      actor: req.user!.id,
-      action: 'payout.paid',
-      entityType: 'Payout',
-      entityId: payout._id,
-      metadata: { reference: req.body.reference },
+    await auditMutation(req.user!.id, 'payout.paid', 'Payout', payout._id, {
+      reference: req.body.reference,
+    });
+    res.json({ success: true, data: payout });
+  }),
+);
+
+router.post(
+  '/admin/payouts/:id/reject',
+  validate({ params: idParams, body: z.object({ note: z.string().min(2).max(500) }) }),
+  asyncHandler(async (req, res) => {
+    const payout = await Payout.findOneAndUpdate(
+      { _id: req.params.id, status: 'requested' },
+      { $set: { status: 'rejected', note: req.body.note, processedAt: new Date() } },
+      { new: true },
+    );
+    if (!payout) throw ApiError.notFound('Requested payout not found');
+    await auditMutation(req.user!.id, 'payout.rejected', 'Payout', payout._id, {
+      note: req.body.note,
     });
     res.json({ success: true, data: payout });
   }),
@@ -348,22 +413,61 @@ router.patch(
 
 router.get(
   '/admin/leads',
-  validate({ query: pageQuery }),
+  validate({
+    query: pageQuery.extend({
+      status: z.enum(['new', 'contacted', 'closed']).optional(),
+      q: z.string().trim().max(100).optional(),
+    }),
+  }),
   asyncHandler(async (req, res) => {
-    const query = req.query as unknown as { page: number; limit: number };
+    const query = req.query as unknown as {
+      page: number;
+      limit: number;
+      status?: 'new' | 'contacted' | 'closed';
+      q?: string;
+    };
+    const filter = {
+      ...(query.status ? { status: query.status } : {}),
+      ...(query.q
+        ? { $or: [{ name: new RegExp(query.q, 'i') }, { email: new RegExp(query.q, 'i') }] }
+        : {}),
+    };
     const [data, total] = await Promise.all([
-      Lead.find()
+      Lead.find(filter)
         .sort({ createdAt: -1 })
         .skip((query.page - 1) * query.limit)
         .limit(query.limit)
         .lean(),
-      Lead.countDocuments(),
+      Lead.countDocuments(filter),
     ]);
     res.json({
       success: true,
       data,
       meta: { ...query, total, totalPages: Math.ceil(total / query.limit) },
     });
+  }),
+);
+
+router.get(
+  '/admin/leads.csv',
+  asyncHandler(async (_req, res) => {
+    const leads = await Lead.find().sort({ createdAt: -1 }).lean();
+    const escape = (value: unknown) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+    const rows = [
+      ['name', 'phone', 'email', 'interest', 'status', 'createdAt'],
+      ...leads.map((lead) => [
+        lead.name,
+        lead.phone,
+        lead.email,
+        lead.interest,
+        lead.status,
+        lead.createdAt.toISOString(),
+      ]),
+    ];
+    res
+      .type('text/csv')
+      .setHeader('Content-Disposition', 'attachment; filename="prepant-leads.csv"')
+      .send(rows.map((row) => row.map(escape).join(',')).join('\n'));
   }),
 );
 
@@ -380,6 +484,7 @@ router.patch(
       { new: true },
     );
     if (!lead) throw ApiError.notFound('Lead not found');
+    await auditMutation(req.user!.id, `lead.${req.body.status}`, 'Lead', lead._id);
     res.json({ success: true, data: lead });
   }),
 );
@@ -417,6 +522,47 @@ router.post(
 );
 
 router.patch(
+  '/admin/blog/:id',
+  validate({
+    params: idParams,
+    body: z.object({
+      title: z.string().min(2).max(180).optional(),
+      excerpt: z.string().max(500).optional(),
+      contentMarkdown: z.string().min(1).optional(),
+      tags: z.array(z.string()).optional(),
+      status: z.enum(['draft', 'published']).optional(),
+      seo: z
+        .object({ title: z.string().optional(), description: z.string().optional() })
+        .optional(),
+    }),
+  }),
+  asyncHandler(async (req, res) => {
+    const post = await Post.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        ...(req.body.status === 'published' ? { publishedAt: new Date() } : {}),
+      },
+      { new: true, runValidators: true },
+    );
+    if (!post) throw ApiError.notFound('Post not found');
+    await auditMutation(req.user!.id, 'post.updated', 'Post', post._id);
+    res.json({ success: true, data: post });
+  }),
+);
+
+router.delete(
+  '/admin/blog/:id',
+  validate({ params: idParams }),
+  asyncHandler(async (req, res) => {
+    const post = await Post.findByIdAndDelete(req.params.id);
+    if (!post) throw ApiError.notFound('Post not found');
+    await auditMutation(req.user!.id, 'post.deleted', 'Post', post._id);
+    res.json({ success: true, data: { id: post._id } });
+  }),
+);
+
+router.patch(
   '/admin/settings/:key',
   validate({
     params: z.object({ key: z.string().min(1) }),
@@ -428,6 +574,9 @@ router.patch(
       { value: req.body.value, updatedBy: req.user!.id },
       { upsert: true, new: true },
     );
+    await auditMutation(req.user!.id, 'setting.updated', 'Setting', setting._id, {
+      key: req.params.key,
+    });
     res.json({ success: true, data: setting });
   }),
 );

@@ -6,6 +6,8 @@ import { app } from '../app.js';
 import { User } from '../models/User.js';
 import { MentorProfile } from '../models/MentorProfile.js';
 import { env } from '../config/env.js';
+import { AuditLog } from '../models/AuditLog.js';
+import { Lead } from '../models/Lead.js';
 
 describe('operations dashboards', () => {
   it('protects role-specific dashboards and serves admin statistics', async () => {
@@ -48,5 +50,53 @@ describe('operations dashboards', () => {
           .set('Authorization', `Bearer ${access(mentor)}`)
       ).status,
     ).toBe(403);
+  });
+
+  it('supports admin controls, filtered lead export and audits mutations', async () => {
+    const admin = await User.create({
+      name: 'Control Admin',
+      email: `control-admin-${Date.now()}@test.dev`,
+      role: 'admin',
+      passwordHash: await bcrypt.hash('Password@123', 10),
+    });
+    const student = await User.create({
+      name: 'Control Student',
+      email: `control-student-${Date.now()}@test.dev`,
+      role: 'student',
+      passwordHash: await bcrypt.hash('Password@123', 10),
+    });
+    await Lead.create({
+      name: 'Lead Person',
+      phone: '+911234567890',
+      email: 'lead@test.dev',
+      interest: 'Physics',
+    });
+    const token = jwt.sign(
+      { sub: admin._id.toString(), role: admin.role, email: admin.email },
+      env.JWT_ACCESS_SECRET,
+    );
+    const blocked = await request(app)
+      .patch(`/api/v1/admin/users/${student._id}/status`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ status: 'blocked' });
+    expect(blocked.status).toBe(200);
+    expect(blocked.body.data.status).toBe('blocked');
+
+    const leads = await request(app)
+      .get('/api/v1/admin/leads?status=new&q=lead')
+      .set('Authorization', `Bearer ${token}`);
+    expect(leads.status).toBe(200);
+    expect(leads.body.data).toHaveLength(1);
+
+    const csv = await request(app)
+      .get('/api/v1/admin/leads.csv')
+      .set('Authorization', `Bearer ${token}`);
+    expect(csv.status).toBe(200);
+    expect(csv.headers['content-type']).toContain('text/csv');
+    expect(csv.text).toContain('Lead Person');
+
+    expect(
+      await AuditLog.exists({ actor: admin._id, action: 'user.blocked', entityId: student._id }),
+    ).toBeTruthy();
   });
 });
