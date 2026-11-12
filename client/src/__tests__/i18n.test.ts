@@ -9,4 +9,13 @@ describe('locale support', () => {
     await i18n.changeLanguage('en');
     expect(i18n.t('nav.findMentor')).toBe('Find a mentor');
   });
+
+  it('supports Indian regional locales across shared home copy', async () => {
+    for (const locale of ['ta', 'te', 'mr', 'kn', 'pa']) {
+      await i18n.changeLanguage(locale);
+      expect(i18n.t('home.platform')).not.toBe('home.platform');
+      expect(i18n.t('nav.language')).not.toBe('nav.language');
+    }
+    await i18n.changeLanguage('en');
+  });
 });

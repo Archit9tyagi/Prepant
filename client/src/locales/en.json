@@ -8,7 +8,8 @@
     "dashboard": "Dashboard",
     "settings": "Settings",
     "logout": "Log out",
-    "language": "Language"
+    "language": "Language",
+    "popularCategories": "Popular categories"
   },
   "hero": {
     "headline": "Prep Smart. Succeed Big.",
@@ -32,6 +33,46 @@
     "bookTrial": "Book trial",
     "message": "Message",
     "comingSoon": "Coming soon",
-    "perHour": "/hr"
+    "perHour": "/hr",
+    "verifiedMentors": "Verified mentors",
+    "oneToOne": "True 1-to-1 sessions",
+    "flexible": "Flexible timings",
+    "trialDiscount": "Trial session discount"
+  },
+  "home": {
+    "platform": "Universal 1-to-1 learning platform",
+    "explore": "Explore by category",
+    "exploreSub": "From school boards and competitive exams to coding, fitness and the arts.",
+    "viewMentors": "View all mentors",
+    "howWorks": "How Prepant works",
+    "howWorksSub": "Get started in three simple steps — learn at your own pace.",
+    "choose": "Choose your mentor",
+    "chooseText": "Filter by subject, level, budget and language, then read verified reviews.",
+    "book": "Book a trial session",
+    "bookText": "Pick a slot in your time zone and get a discount on your first session.",
+    "learn": "Learn and grow",
+    "learnText": "Join the classroom, clear doubts one-on-one and track your progress.",
+    "featured": "Featured mentors",
+    "featuredSub": "Meet top-rated educators ready to guide you.",
+    "exploreAll": "Explore all mentors",
+    "learners": "Active learners",
+    "mentors": "Expert mentors",
+    "sessions": "Sessions delivered",
+    "rating": "Average rating",
+    "becomeTeacher": "Become a teacher",
+    "teacherTitle": "Share your knowledge. Earn on your own terms.",
+    "teacherText": "Set your rate, manage your availability and inspire students across India.",
+    "apply": "Apply as a mentor"
+  },
+  "footer": {
+    "learn": "Learn",
+    "company": "Company",
+    "legal": "Legal & policy",
+    "about": "About us",
+    "howItWorks": "How it works",
+    "teach": "Teach on Prepant",
+    "blog": "Blog",
+    "contact": "Contact",
+    "faq": "FAQ"
   }
 }

@@ -2,8 +2,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MessageCircle, Heart } from 'lucide-react';
 import { siteConfig } from '../../config/site.js';
+import { useTranslation } from 'react-i18next';
 
 export const Footer: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <footer className="border-t border-slate-200 bg-white pt-14 pb-8 text-slate-600">
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
@@ -19,11 +21,9 @@ export const Footer: React.FC = () => {
               </span>
             </Link>
 
-            <p className="text-sm font-semibold text-primary-700">{siteConfig.tagline}</p>
+            <p className="text-sm font-semibold text-primary-700">{t('hero.headline')}</p>
 
-            <p className="text-xs leading-relaxed text-slate-500 max-w-sm">
-              {siteConfig.description}
-            </p>
+            <p className="text-xs leading-relaxed text-slate-500 max-w-sm">{t('hero.subhead')}</p>
 
             {/* Contact details */}
             <div className="space-y-2 pt-2 text-xs">
@@ -58,7 +58,7 @@ export const Footer: React.FC = () => {
 
           {/* Categories */}
           <div>
-            <h4 className="text-sm font-bold text-slate-900 mb-3.5">Learn</h4>
+            <h4 className="text-sm font-bold text-slate-900 mb-3.5">{t('footer.learn')}</h4>
             <ul className="space-y-2 text-xs">
               {siteConfig.categories.slice(0, 6).map((cat) => (
                 <li key={cat.slug}>
@@ -75,36 +75,36 @@ export const Footer: React.FC = () => {
 
           {/* Company */}
           <div>
-            <h4 className="text-sm font-bold text-slate-900 mb-3.5">Company</h4>
+            <h4 className="text-sm font-bold text-slate-900 mb-3.5">{t('footer.company')}</h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link to="/about" className="hover:text-primary-600 transition-colors">
-                  About us
+                  {t('footer.about')}
                 </Link>
               </li>
               <li>
                 <Link to="/how-it-works" className="hover:text-primary-600 transition-colors">
-                  How it works
+                  {t('footer.howItWorks')}
                 </Link>
               </li>
               <li>
                 <Link to="/become-a-mentor" className="hover:text-primary-600 transition-colors">
-                  Teach on Prepant
+                  {t('footer.teach')}
                 </Link>
               </li>
               <li>
                 <Link to="/blog" className="hover:text-primary-600 transition-colors">
-                  Blog
+                  {t('footer.blog')}
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="hover:text-primary-600 transition-colors">
-                  Contact
+                  {t('footer.contact')}
                 </Link>
               </li>
               <li>
                 <Link to="/faq" className="hover:text-primary-600 transition-colors">
-                  FAQ
+                  {t('footer.faq')}
                 </Link>
               </li>
             </ul>
@@ -112,7 +112,7 @@ export const Footer: React.FC = () => {
 
           {/* Legal */}
           <div>
-            <h4 className="text-sm font-bold text-slate-900 mb-3.5">Legal & Policy</h4>
+            <h4 className="text-sm font-bold text-slate-900 mb-3.5">{t('footer.legal')}</h4>
             <ul className="space-y-2 text-xs">
               <li>
                 <Link to="/terms" className="hover:text-primary-600 transition-colors">

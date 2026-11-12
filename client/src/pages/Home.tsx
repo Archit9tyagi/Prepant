@@ -9,6 +9,7 @@ import { StatCard } from '../components/common/StatCard.js';
 import { Seo } from '../components/common/Seo.js';
 import { siteConfig } from '../config/site.js';
 import type { MentorCardData } from '../types/index.js';
+import { useTranslation } from 'react-i18next';
 
 const SAMPLE_MENTORS: MentorCardData[] = [
   {
@@ -77,6 +78,7 @@ const SAMPLE_MENTORS: MentorCardData[] = [
 ];
 
 export const Home: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <>
       <Seo />
@@ -88,18 +90,17 @@ export const Home: React.FC = () => {
             {/* Pill */}
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary-200 bg-white/80 px-3.5 py-1 text-xs font-bold text-primary-700 shadow-xs backdrop-blur-xs">
               <Sparkles className="h-3.5 w-3.5 text-accent-500 fill-accent-500" />
-              <span>Universal 1-to-1 Learning Platform</span>
+              <span>{t('home.platform')}</span>
             </div>
 
             {/* Headline */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
-              Prep Smart. <span className="text-primary-600">Succeed Big.</span>
+              {t('hero.headline')}
             </h1>
 
             {/* Subhead */}
             <p className="mt-5 text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
-              Whatever you want to learn, whenever you&apos;re ready, Prepant connects you with
-              expert mentors who make it simple, personal and tailored.
+              {t('hero.subhead')}
             </p>
 
             {/* Search Input Box */}
@@ -108,28 +109,30 @@ export const Home: React.FC = () => {
                 <Search className="h-5 w-5 text-slate-400" />
                 <input
                   type="text"
-                  placeholder="What do you want to learn? (e.g. JEE Physics, Python)"
+                  placeholder={t('hero.searchPlaceholder')}
                   className="w-full text-sm outline-none placeholder:text-slate-400 text-slate-900 bg-transparent"
                 />
               </div>
               <Button size="lg" asChild className="rounded-[10px] font-bold">
-                <Link to="/mentors">Find my mentor</Link>
+                <Link to="/mentors">{t('hero.cta')}</Link>
               </Button>
             </div>
 
             {/* Trust Row */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-semibold text-slate-600">
               <span className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" /> Verified mentors
+                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" />{' '}
+                {t('common.verifiedMentors')}
               </span>
               <span className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" /> True 1-to-1 sessions
+                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" /> {t('common.oneToOne')}
               </span>
               <span className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" /> Flexible timings
+                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" /> {t('common.flexible')}
               </span>
               <span className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" /> Trial session discount
+                <Check className="h-4 w-4 text-emerald-600 stroke-[3]" />{' '}
+                {t('common.trialDiscount')}
               </span>
             </div>
           </div>
@@ -140,9 +143,9 @@ export const Home: React.FC = () => {
       <section className="py-16 bg-white border-y border-slate-100">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <SectionHeader
-            title="Explore by Category"
-            subtitle="From CBSE school boards and competitive exams to professional coding and fitness."
-            action={{ label: 'View all mentors', href: '/mentors' }}
+            title={t('home.explore')}
+            subtitle={t('home.exploreSub')}
+            action={{ label: t('home.viewMentors'), href: '/mentors' }}
           />
 
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
@@ -162,8 +165,8 @@ export const Home: React.FC = () => {
       <section className="py-16 bg-slate-50">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <SectionHeader
-            title="How Prepant Works"
-            subtitle="Get started in three simple steps — no rigid contracts, learn at your pace."
+            title={t('home.howWorks')}
+            subtitle={t('home.howWorksSub')}
             align="center"
           />
 
@@ -172,33 +175,24 @@ export const Home: React.FC = () => {
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-100 text-primary-700 font-extrabold text-lg mb-4">
                 1
               </div>
-              <h3 className="font-bold text-base text-slate-900 mb-1">Choose your mentor</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Filter by subject, level, budget, and language. Watch intro videos and read reviews
-                from verified learners.
-              </p>
+              <h3 className="font-bold text-base text-slate-900 mb-1">{t('home.choose')}</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">{t('home.chooseText')}</p>
             </div>
 
             <div className="flex flex-col items-center text-center p-6 bg-white rounded-[16px] border border-slate-200 shadow-xs">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-800 font-extrabold text-lg mb-4">
                 2
               </div>
-              <h3 className="font-bold text-base text-slate-900 mb-1">Book a trial session</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Pick a slot that fits your schedule in your time zone. Get 50% off on your first
-                session with any mentor.
-              </p>
+              <h3 className="font-bold text-base text-slate-900 mb-1">{t('home.book')}</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">{t('home.bookText')}</p>
             </div>
 
             <div className="flex flex-col items-center text-center p-6 bg-white rounded-[16px] border border-slate-200 shadow-xs">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-lg mb-4">
                 3
               </div>
-              <h3 className="font-bold text-base text-slate-900 mb-1">Learn and grow</h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Join the interactive classroom, clear doubts one-on-one, and track your ongoing
-                academic progress.
-              </p>
+              <h3 className="font-bold text-base text-slate-900 mb-1">{t('home.learn')}</h3>
+              <p className="text-xs text-slate-500 leading-relaxed">{t('home.learnText')}</p>
             </div>
           </div>
         </div>
@@ -208,9 +202,9 @@ export const Home: React.FC = () => {
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <SectionHeader
-            title="Featured Mentors"
-            subtitle="Meet top-rated educators ready to guide you."
-            action={{ label: 'Explore all mentors', href: '/mentors' }}
+            title={t('home.featured')}
+            subtitle={t('home.featuredSub')}
+            action={{ label: t('home.exploreAll'), href: '/mentors' }}
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -225,10 +219,10 @@ export const Home: React.FC = () => {
       <section className="py-12 bg-slate-50 border-t border-slate-200">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard icon={Users} value="2,500+" label="Active Learners" />
-            <StatCard icon={GraduationCap} value="180+" label="Expert Mentors" />
-            <StatCard icon={Video} value="15,000+" label="Sessions Delivered" />
-            <StatCard icon={Star} value="4.9 / 5" label="Average Rating" />
+            <StatCard icon={Users} value="2,500+" label={t('home.learners')} />
+            <StatCard icon={GraduationCap} value="180+" label={t('home.mentors')} />
+            <StatCard icon={Video} value="15,000+" label={t('home.sessions')} />
+            <StatCard icon={Star} value="4.9 / 5" label={t('home.rating')} />
           </div>
         </div>
       </section>
@@ -238,18 +232,15 @@ export const Home: React.FC = () => {
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-8">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-accent-400">
-              Become a teacher
+              {t('home.becomeTeacher')}
             </span>
             <h2 className="mt-2 text-3xl font-extrabold tracking-tight">
-              Share your knowledge. Earn on your own terms.
+              {t('home.teacherTitle')}
             </h2>
-            <p className="mt-2 text-sm text-primary-100 max-w-xl">
-              Set your own hourly rate, manage your availability with ease, and inspire students
-              across the nation.
-            </p>
+            <p className="mt-2 text-sm text-primary-100 max-w-xl">{t('home.teacherText')}</p>
           </div>
           <Button variant="accent" size="lg" asChild className="shrink-0 text-slate-950 font-bold">
-            <Link to="/become-a-mentor">Apply as a mentor</Link>
+            <Link to="/become-a-mentor">{t('home.apply')}</Link>
           </Button>
         </div>
       </section>

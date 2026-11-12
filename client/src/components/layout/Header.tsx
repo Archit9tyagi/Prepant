@@ -67,7 +67,7 @@ export const Header: React.FC = () => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 p-2">
-              <DropdownMenuLabel>Popular Categories</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('nav.popularCategories')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {siteConfig.categories.map((cat) => (
                 <DropdownMenuItem key={cat.slug} asChild>
@@ -94,12 +94,17 @@ export const Header: React.FC = () => {
             <span className="sr-only">{t('nav.language')}</span>
             <select
               aria-label={t('nav.language')}
-              value={i18n.resolvedLanguage?.startsWith('hi') ? 'hi' : 'en'}
+              value={i18n.resolvedLanguage?.split('-')[0] || 'en'}
               onChange={(event) => void i18n.changeLanguage(event.target.value)}
               className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-xs font-semibold outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="en">English</option>
               <option value="hi">हिन्दी</option>
+              <option value="ta">தமிழ்</option>
+              <option value="te">తెలుగు</option>
+              <option value="mr">मराठी</option>
+              <option value="kn">ಕನ್ನಡ</option>
+              <option value="pa">ਪੰਜਾਬੀ</option>
             </select>
           </label>
           {user ? (
@@ -159,12 +164,17 @@ export const Header: React.FC = () => {
         <div className="flex md:hidden items-center gap-2">
           <select
             aria-label={t('nav.language')}
-            value={i18n.resolvedLanguage?.startsWith('hi') ? 'hi' : 'en'}
+            value={i18n.resolvedLanguage?.split('-')[0] || 'en'}
             onChange={(event) => void i18n.changeLanguage(event.target.value)}
             className="rounded-md border border-slate-200 bg-white px-1.5 py-1 text-xs font-semibold outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="en">EN</option>
             <option value="hi">हि</option>
+            <option value="ta">த</option>
+            <option value="te">తె</option>
+            <option value="mr">म</option>
+            <option value="kn">ಕ</option>
+            <option value="pa">ਪੰ</option>
           </select>
           {user && (
             <Link to={getDashboardLink()} className="p-1">

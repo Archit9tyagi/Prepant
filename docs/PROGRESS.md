@@ -26,6 +26,8 @@
 - **Done:** Phase 8.4 CMS cover upload and expanded admin mutation/audit tests
 - **Done:** Phase 9 repository hardening and launch evidence
 - **Done:** Phase 10 launch-operations handoff documentation
+- **Done:** Regional language selector and shared public copy for English, Hindi,
+  Tamil, Telugu, Marathi, Kannada and Punjabi
 - **In progress:** Phase 11 scope and implementation planning
 - **Next:** Implement lesson-pack and coupon models, validation, protected APIs
   and integer-paise pricing tests
