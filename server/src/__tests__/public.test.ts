@@ -8,6 +8,18 @@ import bcrypt from 'bcryptjs';
 import { app } from '../app.js';
 
 describe('public marketplace', () => {
+  it('returns database-backed homepage statistics without fabricated values', async () => {
+    const response = await request(app).get('/api/v1/stats');
+    expect(response.status).toBe(200);
+    expect(response.body.data).toMatchObject({
+      activeLearners: 0,
+      approvedMentors: 0,
+      sessionsDelivered: 0,
+      averageRating: null,
+      reviewCount: 0,
+    });
+  });
+
   it('lists approved mentors and stores lead submissions', async () => {
     const category = await Category.create({
       name: 'Public Test',

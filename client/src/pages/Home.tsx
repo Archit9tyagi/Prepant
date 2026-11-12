@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, Search, Sparkles, Users, Video, Star, GraduationCap } from 'lucide-react';
 import { Button } from '../components/ui/button.js';
@@ -10,75 +10,30 @@ import { Seo } from '../components/common/Seo.js';
 import { siteConfig } from '../config/site.js';
 import type { MentorCardData } from '../types/index.js';
 import { useTranslation } from 'react-i18next';
+import { api } from '../lib/api.js';
 
-const SAMPLE_MENTORS: MentorCardData[] = [
-  {
-    slug: 'aravind-sharma-physics',
-    name: 'Dr. Aravind Sharma',
-    avatar:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    headline: 'Ex-IITian | 12+ Yrs Teaching JEE Advanced & CBSE Physics',
-    subjects: ['JEE Physics', 'NEET Physics', 'CBSE Class 12'],
-    ratingAvg: 4.9,
-    ratingCount: 148,
-    sessionsTaught: 1240,
-    hourlyRatePaise: 80000, // ₹800
-    trialPricePaise: 40000, // ₹400
-    trialEnabled: true,
-    badges: ['verified', 'top_rated'],
-    bio: 'Passionate physics mentor focusing on first-principles understanding and problem-solving intuition. Helped 80+ students clear IIT-JEE with top ranks.',
-    languages: [
-      { code: 'en', level: 'Fluent' },
-      { code: 'hi', level: 'Native' },
-    ],
-    country: 'IN',
-    timezone: 'Asia/Kolkata',
-  },
-  {
-    slug: 'priya-nair-biology',
-    name: 'Priya Nair, M.Sc.',
-    avatar:
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-    headline: 'AIIMS Gold Medalist Guide | NEET Botany & Zoology Specialist',
-    subjects: ['NEET Biology', 'CBSE Class 11', 'Olympiad'],
-    ratingAvg: 4.95,
-    ratingCount: 210,
-    sessionsTaught: 1890,
-    hourlyRatePaise: 95000, // ₹950
-    trialPricePaise: 47500, // ₹475
-    trialEnabled: true,
-    badges: ['verified', 'rising'],
-    bio: 'Simplifying complex biological diagrams, memorization techniques, and NCERT deep dives for aspiring medical doctors.',
-    languages: [
-      { code: 'en', level: 'Fluent' },
-      { code: 'hi', level: 'Fluent' },
-    ],
-    country: 'IN',
-    timezone: 'Asia/Kolkata',
-  },
-  {
-    slug: 'rohit-verma-coding',
-    name: 'Rohit Verma',
-    avatar:
-      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    headline: 'Senior SDE @ Tier-1 Tech | Python, Data Structures & System Design',
-    subjects: ['Python', 'DSA & LeetCode', 'Web Dev'],
-    ratingAvg: 4.85,
-    ratingCount: 94,
-    sessionsTaught: 780,
-    hourlyRatePaise: 120000, // ₹1,200
-    trialPricePaise: 60000, // ₹600
-    trialEnabled: true,
-    badges: ['verified'],
-    bio: 'Hands-on live coding mentorship tailored for college students and professionals aiming for top product engineering roles.',
-    languages: [{ code: 'en', level: 'Fluent' }],
-    country: 'IN',
-    timezone: 'Asia/Kolkata',
-  },
-];
+type HomeStats = {
+  activeLearners: number;
+  approvedMentors: number;
+  sessionsDelivered: number;
+  averageRating: number | null;
+};
 
 export const Home: React.FC = () => {
   const { t } = useTranslation();
+  const [mentors, setMentors] = useState<MentorCardData[]>([]);
+  const [stats, setStats] = useState<HomeStats | null>(null);
+  useEffect(() => {
+    void Promise.all([
+      api.get('/mentors', { params: { sort: 'rating', limit: 3 } }),
+      api.get('/stats'),
+    ])
+      .then(([mentorResponse, statsResponse]) => {
+        setMentors(mentorResponse.data.data);
+        setStats(statsResponse.data.data);
+      })
+      .catch(() => undefined);
+  }, []);
   return (
     <>
       <Seo />
@@ -208,10 +163,13 @@ export const Home: React.FC = () => {
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {SAMPLE_MENTORS.map((m) => (
+            {mentors.map((m) => (
               <MentorCard key={m.slug} mentor={m} />
             ))}
           </div>
+          {!mentors.length && (
+            <p className="mt-6 text-center text-sm text-slate-500">{t('home.noMentors')}</p>
+          )}
         </div>
       </section>
 
@@ -219,10 +177,26 @@ export const Home: React.FC = () => {
       <section className="py-12 bg-slate-50 border-t border-slate-200">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <StatCard icon={Users} value="2,500+" label={t('home.learners')} />
-            <StatCard icon={GraduationCap} value="180+" label={t('home.mentors')} />
-            <StatCard icon={Video} value="15,000+" label={t('home.sessions')} />
-            <StatCard icon={Star} value="4.9 / 5" label={t('home.rating')} />
+            <StatCard
+              icon={Users}
+              value={stats ? stats.activeLearners.toLocaleString('en-IN') : '—'}
+              label={t('home.learners')}
+            />
+            <StatCard
+              icon={GraduationCap}
+              value={stats ? stats.approvedMentors.toLocaleString('en-IN') : '—'}
+              label={t('home.mentors')}
+            />
+            <StatCard
+              icon={Video}
+              value={stats ? stats.sessionsDelivered.toLocaleString('en-IN') : '—'}
+              label={t('home.sessions')}
+            />
+            <StatCard
+              icon={Star}
+              value={stats?.averageRating ? `${stats.averageRating.toFixed(1)} / 5` : '—'}
+              label={t('home.rating')}
+            />
           </div>
         </div>
       </section>

@@ -28,6 +28,8 @@
 - **Done:** Phase 10 launch-operations handoff documentation
 - **Done:** Regional language selector and shared public copy for English, Hindi,
   Tamil, Telugu, Marathi, Kannada and Punjabi
+- **Done:** Homepage mentors and KPI figures now load from database-backed
+  endpoints, with honest empty/loading states instead of sample data
 - **In progress:** Phase 11 scope and implementation planning
 - **Next:** Implement lesson-pack and coupon models, validation, protected APIs
   and integer-paise pricing tests

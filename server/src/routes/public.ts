@@ -9,8 +9,35 @@ import { Review } from '../models/Review.js';
 import { Category } from '../models/Category.js';
 import { Subject } from '../models/Subject.js';
 import { Post } from '../models/Post.js';
+import { User } from '../models/User.js';
+import { Booking } from '../models/Booking.js';
 
 const router = Router();
+
+router.get(
+  '/stats',
+  asyncHandler(async (_req, res) => {
+    const [activeLearners, approvedMentors, sessionsDelivered, rating] = await Promise.all([
+      User.countDocuments({ role: 'student', status: 'active', deletedAt: { $exists: false } }),
+      MentorProfile.countDocuments({ status: 'approved' }),
+      Booking.countDocuments({ status: 'completed' }),
+      Review.aggregate([
+        { $match: { status: 'visible' } },
+        { $group: { _id: null, average: { $avg: '$rating' }, count: { $sum: 1 } } },
+      ]),
+    ]);
+    res.json({
+      success: true,
+      data: {
+        activeLearners,
+        approvedMentors,
+        sessionsDelivered,
+        averageRating: rating[0]?.average ?? null,
+        reviewCount: rating[0]?.count ?? 0,
+      },
+    });
+  }),
+);
 
 router.get(
   '/content/categories/:categorySlug',

@@ -62,7 +62,8 @@
     "becomeTeacher": "Become a teacher",
     "teacherTitle": "Share your knowledge. Earn on your own terms.",
     "teacherText": "Set your rate, manage your availability and inspire students across India.",
-    "apply": "Apply as a mentor"
+    "apply": "Apply as a mentor",
+    "noMentors": "No approved mentors are available yet."
   },
   "footer": {
     "learn": "Learn",
