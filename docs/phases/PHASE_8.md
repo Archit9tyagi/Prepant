@@ -37,3 +37,10 @@ Acceptance: an admin can run the business from the panel exactly as listed in se
   dashboard.
 - Add markdown draft editor with preview and settings JSON editor.
 - Add post-created audit evidence and expose lead notes in the inbox.
+
+## Chunk 8.4 — CMS completion
+
+- Add authenticated blog cover-image upload through the existing local/Cloudinary
+  storage provider seam.
+- Add client cover selection and upload in the markdown editor.
+- Verify blog creation, editing, settings mutation and audit-log evidence.

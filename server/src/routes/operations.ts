@@ -17,6 +17,8 @@ import { User } from '../models/User.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { MentorProfile } from '../models/MentorProfile.js';
 import { getPaymentProvider } from '../providers/index.js';
+import { getStorageProvider } from '../providers/index.js';
+import { assertUploadSize, upload } from '../middleware/upload.js';
 
 const router = Router();
 const idParams = z.object({ id: z.string().min(1) });
@@ -555,6 +557,24 @@ router.patch(
         ...(req.body.status === 'published' ? { publishedAt: new Date() } : {}),
       },
       { new: true, runValidators: true },
+    );
+
+    router.post(
+      '/admin/blog/:id/cover',
+      upload.single('cover'),
+      validate({ params: idParams }),
+      asyncHandler(async (req, res) => {
+        if (!req.file) throw ApiError.badRequest('Cover image is required', 'FILE_REQUIRED');
+        assertUploadSize(req.file, 5 * 1024 * 1024);
+        const post = await Post.findById(req.params.id);
+        if (!post) throw ApiError.notFound('Post not found');
+        if (post.coverImage?.publicId) await getStorageProvider().delete(post.coverImage.publicId);
+        const uploaded = await getStorageProvider().upload(req.file, 'prepant/blog');
+        post.coverImage = uploaded;
+        await post.save();
+        await auditMutation(req.user!.id, 'post.cover_updated', 'Post', post._id);
+        res.json({ success: true, data: post });
+      }),
     );
     if (!post) throw ApiError.notFound('Post not found');
     await auditMutation(req.user!.id, 'post.updated', 'Post', post._id);

@@ -8,6 +8,7 @@ import { MentorProfile } from '../models/MentorProfile.js';
 import { env } from '../config/env.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { Lead } from '../models/Lead.js';
+import { Post } from '../models/Post.js';
 
 describe('operations dashboards', () => {
   it('protects role-specific dashboards and serves admin statistics', async () => {
@@ -98,5 +99,38 @@ describe('operations dashboards', () => {
     expect(
       await AuditLog.exists({ actor: admin._id, action: 'user.blocked', entityId: student._id }),
     ).toBeTruthy();
+  });
+
+  it('audits CMS and settings mutations', async () => {
+    const admin = await User.create({
+      name: 'CMS Admin',
+      email: `cms-admin-${Date.now()}@test.dev`,
+      role: 'admin',
+      passwordHash: await bcrypt.hash('Password@123', 10),
+    });
+    const token = jwt.sign(
+      { sub: admin._id.toString(), role: admin.role, email: admin.email },
+      env.JWT_ACCESS_SECRET,
+    );
+    const created = await request(app)
+      .post('/api/v1/admin/blog')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ title: 'Admin post', slug: `admin-post-${Date.now()}`, contentMarkdown: '# Hello' });
+    expect(created.status).toBe(201);
+    const postId = created.body.data._id;
+    expect(
+      await request(app)
+        .patch(`/api/v1/admin/blog/${postId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ status: 'published' }),
+    ).toHaveProperty('status', 200);
+    expect(
+      await request(app)
+        .patch('/api/v1/admin/settings/booking')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ value: { commissionPercent: 20 } }),
+    ).toHaveProperty('status', 200);
+    expect(await Post.exists({ _id: postId, status: 'published' })).toBeTruthy();
+    expect(await AuditLog.countDocuments({ actor: admin._id })).toBeGreaterThanOrEqual(3);
   });
 });

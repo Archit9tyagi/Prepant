@@ -320,9 +320,21 @@ function BlogEditor() {
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
   const [contentMarkdown, setContentMarkdown] = useState('');
+  const [cover, setCover] = useState<File | null>(null);
   const save = async () => {
     try {
-      await api.post('/admin/blog', { title, slug, contentMarkdown, tags: [], status: 'draft' });
+      const { data: response } = await api.post('/admin/blog', {
+        title,
+        slug,
+        contentMarkdown,
+        tags: [],
+        status: 'draft',
+      });
+      if (cover) {
+        const form = new FormData();
+        form.append('cover', cover);
+        await api.post(`/admin/blog/${response.data._id}/cover`, form);
+      }
       toast.success('Draft saved');
     } catch {
       toast.error('Could not save draft');
@@ -342,6 +354,11 @@ function BlogEditor() {
           value={contentMarkdown}
           onChange={(event) => setContentMarkdown(event.target.value)}
           placeholder="Markdown content"
+        />
+        <Input
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          onChange={(event) => setCover(event.target.files?.[0] ?? null)}
         />
         <Button onClick={() => void save()}>Save draft</Button>
       </div>
