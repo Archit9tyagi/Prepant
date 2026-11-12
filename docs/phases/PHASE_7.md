@@ -36,3 +36,12 @@ for the next post-Phase-6 workstream.
 - Added `docs/LAUNCH_CHECKLIST.md` with environment, runtime, security,
   smoke-test and release verification gates.
 - Added automated checks for Helmet security headers and exact-origin CORS.
+
+## Chunk 7.5 — Public launch polish
+
+- Added the Hindi locale and browser-language/local-storage detection.
+- Added an accessible English/Hindi switcher to desktop and mobile public
+  navigation.
+- Replaced the Vite placeholder favicon with Prepant branding and added a web
+  app manifest.
+- Updated the existing signup validation message for Zod 4 compatibility.

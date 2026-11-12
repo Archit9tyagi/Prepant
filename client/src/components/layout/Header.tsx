@@ -15,11 +15,14 @@ import { useAuthStore } from '../../store/authStore.js';
 import { useUiStore } from '../../store/uiStore.js';
 import { siteConfig } from '../../config/site.js';
 import { api } from '../../lib/api.js';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../app/i18n.js';
 
 export const Header: React.FC = () => {
   const { user, logout } = useAuthStore();
   const { setMobileNavOpen } = useUiStore();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     void api.post('/auth/logout').catch(() => undefined);
@@ -51,7 +54,7 @@ export const Header: React.FC = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-7 text-sm font-semibold text-slate-700">
           <Link to="/mentors" className="hover:text-primary-600 transition-colors">
-            Find a mentor
+            {t('nav.findMentor')}
           </Link>
 
           <DropdownMenu>
@@ -60,7 +63,7 @@ export const Header: React.FC = () => {
                 type="button"
                 className="flex items-center gap-1 hover:text-primary-600 transition-colors cursor-pointer"
               >
-                <span>Categories</span>
+                <span>{t('nav.categories')}</span>
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 p-2">
@@ -81,12 +84,24 @@ export const Header: React.FC = () => {
           </DropdownMenu>
 
           <Link to="/become-a-mentor" className="hover:text-primary-600 transition-colors">
-            Become a mentor
+            {t('nav.becomeMentor')}
           </Link>
         </nav>
 
         {/* Right Action / Auth */}
         <div className="hidden md:flex items-center gap-3">
+          <label className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+            <span className="sr-only">{t('nav.language')}</span>
+            <select
+              aria-label={t('nav.language')}
+              value={i18n.resolvedLanguage?.startsWith('hi') ? 'hi' : 'en'}
+              onChange={(event) => void i18n.changeLanguage(event.target.value)}
+              className="rounded-md border border-slate-200 bg-white px-2 py-1.5 text-xs font-semibold outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="en">English</option>
+              <option value="hi">हिन्दी</option>
+            </select>
+          </label>
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -112,29 +127,29 @@ export const Header: React.FC = () => {
                 <DropdownMenuItem asChild>
                   <Link to={getDashboardLink()} className="cursor-pointer">
                     <LayoutDashboard className="mr-2 h-4 w-4" />
-                    <span>Dashboard</span>
+                    <span>{t('nav.dashboard')}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link to="/app/settings" className="cursor-pointer">
                     <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
+                    <span>{t('nav.settings')}</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>{t('nav.logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <>
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/login">Log in</Link>
+                <Link to="/login">{t('nav.login')}</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link to="/signup">Sign up</Link>
+                <Link to="/signup">{t('nav.signup')}</Link>
               </Button>
             </>
           )}
@@ -142,6 +157,15 @@ export const Header: React.FC = () => {
 
         {/* Mobile Hamburger */}
         <div className="flex md:hidden items-center gap-2">
+          <select
+            aria-label={t('nav.language')}
+            value={i18n.resolvedLanguage?.startsWith('hi') ? 'hi' : 'en'}
+            onChange={(event) => void i18n.changeLanguage(event.target.value)}
+            className="rounded-md border border-slate-200 bg-white px-1.5 py-1 text-xs font-semibold outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="en">EN</option>
+            <option value="hi">हि</option>
+          </select>
           {user && (
             <Link to={getDashboardLink()} className="p-1">
               <Avatar className="h-7 w-7">

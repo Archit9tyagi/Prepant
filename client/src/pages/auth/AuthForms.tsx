@@ -88,7 +88,7 @@ export function Signup() {
         name: z.string().min(2),
         email: z.string().email(),
         password: passwordRules,
-        consent: z.literal(true, { errorMap: () => ({ message: 'Please accept the terms' }) }),
+        consent: z.literal(true, { message: 'Please accept the terms' }),
       }),
     ),
   });
