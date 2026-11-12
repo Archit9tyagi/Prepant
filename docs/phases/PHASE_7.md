@@ -45,3 +45,12 @@ for the next post-Phase-6 workstream.
 - Replaced the Vite placeholder favicon with Prepant branding and added a web
   app manifest.
 - Updated the existing signup validation message for Zod 4 compatibility.
+
+## Chunk 7.6 — Acceptance record
+
+- Added `docs/ACCEPTANCE.md` mapping the learner, marketplace, booking,
+  operations and public-client journeys to automated checks.
+- Added a Hindi locale regression test.
+- Explicitly kept deployment-specific smoke, Playwright and axe checks as
+  manual release gates rather than claiming they ran without a configured
+  browser/deployment environment.
