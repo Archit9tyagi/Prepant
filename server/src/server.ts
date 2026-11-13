@@ -40,11 +40,11 @@ async function startServer() {
   try {
     await connectDB();
 
-    httpServer.listen(env.PORT, () => {
-      logger.info(`Prepant API running on port ${env.PORT} in ${env.NODE_ENV} mode`);
+    httpServer.listen(env.PORT, '0.0.0.0', () => {
+      logger.info(`listening on 0.0.0.0:${env.PORT}`);
     });
-  } catch (err) {
-    logger.error({ err }, 'Failed to start server');
+  } catch {
+    logger.error('Failed to start server after MongoDB connection retries');
     process.exit(1);
   }
 }

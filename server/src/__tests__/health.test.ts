@@ -12,6 +12,13 @@ describe('Health API', () => {
     expect(res.body.data).toHaveProperty('timestamp');
   });
 
+  it('GET /health should return 200 without checking database readiness', async () => {
+    const res = await request(app).get('/health');
+
+    expect(res.status).toBe(200);
+    expect(res.body.data.status).toBe('ok');
+  });
+
   it('GET /api/v1/unknown-route should return 404', async () => {
     const res = await request(app).get('/api/v1/unknown-route');
 

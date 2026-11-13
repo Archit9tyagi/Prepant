@@ -40,6 +40,8 @@
   devDependencies and pin the Node runtime to 22.x
 - **Done:** Added an npm repository policy so existing Render services using
   `npm install && npm run build` also retain build-time dependencies
+- **Done:** Render backend now requires production MongoDB and secrets,
+  retries database startup safely, binds on `0.0.0.0`, and documents Atlas setup
 - **In progress:** Phase 11 scope and implementation planning
 - **Next:** Implement lesson-pack and coupon models, validation, protected APIs
   and integer-paise pricing tests
@@ -67,6 +69,11 @@ MongoDB must be reachable at `MONGODB_URI`. Tests use MongoDB Memory Server.
   `Demo@12345`.
 - The mock provider confirms payments immediately for local development; production Razorpay requires the documented environment keys.
 - Socket.IO requires the same access token used by REST and uses `VITE_SOCKET_URL` when configured.
+- Client build: main chunk about 1.3 MB (398 kB gzipped) plus a 767 kB chunk,
+  far above the brief's 200 kB gzipped budget; plan code splitting for Phase 9.
+- `npm audit` reports 13 vulnerabilities (2 critical, 1 high); review and plan
+  upgrades.
+- The zod/Rollup annotation build warnings are harmless.
 - Phase 7 deployment-owner gates remain external: no deployed environment,
   browser accessibility project, Docker daemon or live provider credentials
   are available in this repository-only environment.

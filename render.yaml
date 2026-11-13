@@ -2,6 +2,28 @@ services:
   - type: web
     name: prepant-api
     runtime: node
-    buildCommand: npm install --include=dev && npm run build
-    startCommand: npm run start
-    healthCheckPath: /api/v1/ready
+    plan: free
+    region: singapore # Closest Render region to an India-hosted MongoDB Atlas cluster.
+    buildCommand: npm install --include=dev && npm run build -w server
+    startCommand: npm run start -w server
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: SERVER_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: COOKIE_SECURE
+        value: 'true'
+      - key: TRUST_PROXY
+        value: '1'
+      - key: PAYMENTS_MODE
+        value: mock

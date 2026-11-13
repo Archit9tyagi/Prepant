@@ -24,7 +24,7 @@ import { requestId } from './middleware/requestId.js';
 
 export const app = express();
 
-app.set('trust proxy', env.TRUST_PROXY);
+app.set('trust proxy', env.NODE_ENV === 'production' ? 1 : env.TRUST_PROXY);
 
 app.use(helmet());
 app.use(
@@ -70,6 +70,7 @@ app.get('/sitemap.xml', (_req, res) => {
 
 // API v1 routes
 app.use('/api/v1', healthRouter);
+app.use('/', healthRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1', taxonomyRouter);
